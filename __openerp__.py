@@ -74,6 +74,7 @@
         'test/wms_test26.yml',
         'test/wms_test27.yml',
         'test/wms_test28.yml',
+        'test/wms_test29.yml',
     ],
     #'external_dependancies': {'python': ['kombu'], 'bin': ['which']},
     'installable': True,
