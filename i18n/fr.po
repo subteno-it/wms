@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 6.0.2\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-06-30 15:15+0000\n"
-"PO-Revision-Date: 2011-06-30 17:16+0100\n"
+"POT-Creation-Date: 2011-06-30 16:25+0000\n"
+"PO-Revision-Date: 2011-06-30 18:26+0100\n"
 "Last-Translator: Sylvain Garancher <sylvain.garancher@syleam.fr>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -58,15 +58,27 @@ msgid "Stock location category"
 msgstr "Catégorie d'emplacement"
 
 #. module: wms
-#: model:ir.model,name:wms.model_stock_warehouse
-#: field:stock.location,warehouse_id:0
-msgid "Warehouse"
-msgstr "Entrepôt"
-
-#. module: wms
 #: model:ir.model,name:wms.model_product_product
 msgid "Product"
 msgstr "Produit"
+
+#. module: wms
+#: model:ir.module.module,shortdesc:wms.module_meta_information
+msgid "Warehouse Management System"
+msgstr "Système de Gestion d'Entrepôts"
+
+#. module: wms
+#: model:ir.module.module,description:wms.module_meta_information
+msgid ""
+"This module allows to manage crossdocking in warehouses\n"
+"\n"
+"/!\\ WARNING /!\\\n"
+"THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !"
+msgstr ""
+"Ce module permet de gérer le crossdocking dans les entrepôts\n"
+"\n"
+"/!\\ ATTENTION /!\\\n"
+"CE MODULE NE TIENT PAS ENCORE COMPTE DES LOTS DE PRODUITS !"
 
 #. module: wms
 #: field:stock.warehouse,force_reserve:0
@@ -74,9 +86,10 @@ msgid "Force reserve"
 msgstr "Forcer la réservation"
 
 #. module: wms
-#: model:ir.module.module,shortdesc:wms.module_meta_information
-msgid "WMS"
-msgstr "WMS"
+#: model:ir.model,name:wms.model_stock_warehouse
+#: field:stock.location,warehouse_id:0
+msgid "Warehouse"
+msgstr "Entrepôt"
 
 #. module: wms
 #: constraint:product.product:0
@@ -109,8 +122,6 @@ msgstr "Actif"
 msgid "Fixed"
 msgstr "Fixé"
 
-#. module: wms
-#: model:ir.module.module,description:wms.module_meta_information
-msgid "This module allows to manage crossdocking in warehouses"
-msgstr "Ce module permet de gérer le crossdocking dans les entrepôts"
+#~ msgid "WMS"
+#~ msgstr "WMS"
 

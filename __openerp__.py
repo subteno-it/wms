@@ -23,10 +23,13 @@
 ##############################################################################
 
 {
-    'name': 'WMS',
+    'name': 'Warehouse Management System',
     'version': '1.0',
     'category': 'Generic Modules/Inventory Control',
-    'description': """This module allows to manage crossdocking in warehouses""",
+    'description': """This module allows to manage crossdocking in warehouses
+
+/!\ WARNING /!\\
+THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !""",
     'author': 'SYLEAM',
     'website': 'http://www.syleam.fr/',
     'depends': [
