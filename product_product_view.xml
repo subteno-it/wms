@@ -28,7 +28,7 @@
             <field name="name">product.product.form</field>
             <field name="model">product.product</field>
             <field name="type">form</field>
-            <field name="priority" eval="16"/>
+            <field name="priority" eval="20"/>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="/form/notebook/page[@string='Procurement &amp; Locations']/group[@name='misc']" position="inside">
