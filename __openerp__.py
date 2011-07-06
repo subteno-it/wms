@@ -40,7 +40,7 @@ THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !""",
     'init_xml': [],
     'images': [],
     'update_xml': [
-        #'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         #'wizard/wizard.xml',
         'stock_location_view.xml',
         'product_product_view.xml',
