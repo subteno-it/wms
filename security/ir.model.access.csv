@@ -1,3 +1,3 @@
 "id","name","model_id/id","group_id/id","perm_read","perm_write","perm_create","perm_unlink"
-"","stock_location_category_user","wms.model_stock_location_category","stock.group_stock_user","True","","",""
-"","stock_location_category_manager","wms.model_stock_location_category","stock.group_stock_manager","True","","",""
+"stock_location_category_user","stock_location_category_user","wms.model_stock_location_category","stock.group_stock_user","True","","",""
+"stock_location_category_manager","stock_location_category_manager","wms.model_stock_location_category","stock.group_stock_manager","True","","",""
