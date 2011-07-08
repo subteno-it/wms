@@ -30,8 +30,8 @@ class stock_warehouse(osv.osv):
     _inherit = 'stock.warehouse'
 
     _columns = {
-        'force_reserve': fields.boolean('Force reserve', ),
-        'crossdock_location_id': fields.many2one('stock.location', 'Crossdock location', ),
+        'force_reserve': fields.boolean('Force reserve', help='If checked, the products will be reserved, even if we need more than the available quantity'),
+        'crossdock_location_id': fields.many2one('stock.location', 'Crossdock location', help='Crossdock location for this product'),
     }
 
 stock_warehouse()

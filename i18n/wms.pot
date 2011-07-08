@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 6.0.2\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-06-30 16:25+0000\n"
-"PO-Revision-Date: 2011-06-30 16:25+0000\n"
+"POT-Creation-Date: 2011-07-08 13:35+0000\n"
+"PO-Revision-Date: 2011-07-08 13:35+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,28 +21,8 @@ msgid "Category"
 msgstr ""
 
 #. module: wms
-#: field:stock.warehouse,crossdock_location_id:0
-msgid "Crossdock location"
-msgstr ""
-
-#. module: wms
-#: field:product.product,location_type:0
-msgid "Location type"
-msgstr ""
-
-#. module: wms
-#: field:stock.location.category,code:0
-msgid "Code"
-msgstr ""
-
-#. module: wms
-#: selection:product.product,location_type:0
-msgid "Compute"
-msgstr ""
-
-#. module: wms
-#: field:stock.location.category,name:0
-msgid "Name"
+#: help:stock.location,warehouse_id:0
+msgid "Warehouse where is located this location"
 msgstr ""
 
 #. module: wms
@@ -51,50 +31,8 @@ msgid "Category of stock location"
 msgstr ""
 
 #. module: wms
-#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
-#: model:ir.ui.menu,name:wms.menu_stock_location_category
-#: view:stock.location.category:0
-msgid "Stock location category"
-msgstr ""
-
-#. module: wms
-#: model:ir.model,name:wms.model_product_product
-msgid "Product"
-msgstr ""
-
-#. module: wms
 #: model:ir.module.module,shortdesc:wms.module_meta_information
 msgid "Warehouse Management System"
-msgstr ""
-
-#. module: wms
-#: model:ir.module.module,description:wms.module_meta_information
-msgid "This module allows to manage crossdocking in warehouses\n"
-"\n"
-"/!\\ WARNING /!\\\n"
-"THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !"
-msgstr ""
-
-#. module: wms
-#: field:stock.warehouse,force_reserve:0
-msgid "Force reserve"
-msgstr ""
-
-#. module: wms
-#: model:ir.model,name:wms.model_stock_warehouse
-#: field:stock.location,warehouse_id:0
-msgid "Warehouse"
-msgstr ""
-
-#. module: wms
-#: constraint:product.product:0
-msgid "Error: Invalid ean code"
-msgstr ""
-
-#. module: wms
-#: selection:product.product,location_type:0
-#: model:stock.location,name:wms.stock_location_crossdock
-msgid "Crossdock"
 msgstr ""
 
 #. module: wms
@@ -108,12 +46,114 @@ msgid "Picking List"
 msgstr ""
 
 #. module: wms
+#: model:ir.model,name:wms.model_stock_warehouse
+#: field:stock.location,warehouse_id:0
+msgid "Warehouse"
+msgstr ""
+
+#. module: wms
+#: model:ir.module.module,description:wms.module_meta_information
+msgid "This module allows to manage crossdocking in warehouses\n"
+"\n"
+"/!\\ WARNING /!\\\n"
+"THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !"
+msgstr ""
+
+#. module: wms
+#: field:product.product,location_type:0
+msgid "Location type"
+msgstr ""
+
+#. module: wms
+#: help:product.product,location_type:0
+msgid "Type of location for this product"
+msgstr ""
+
+#. module: wms
+#: help:stock.location.category,name:0
+msgid "Name of the category of stock location"
+msgstr ""
+
+#. module: wms
+#: field:stock.warehouse,force_reserve:0
+msgid "Force reserve"
+msgstr ""
+
+#. module: wms
+#: help:stock.warehouse,crossdock_location_id:0
+msgid "Crossdock location for this product"
+msgstr ""
+
+#. module: wms
+#: selection:product.product,location_type:0
+#: model:stock.location,name:wms.stock_location_crossdock
+msgid "Crossdock"
+msgstr ""
+
+#. module: wms
+#: help:stock.warehouse,force_reserve:0
+msgid "If checked, the products will be reserved, even if we need more than the available quantity"
+msgstr ""
+
+#. module: wms
 #: field:stock.location.category,active:0
 msgid "Active"
 msgstr ""
 
 #. module: wms
+#: help:stock.location.category,active:0
+msgid "This field allows to hide the category without removing it"
+msgstr ""
+
+#. module: wms
+#: field:stock.warehouse,crossdock_location_id:0
+msgid "Crossdock location"
+msgstr ""
+
+#. module: wms
+#: selection:product.product,location_type:0
+msgid "Compute"
+msgstr ""
+
+#. module: wms
+#: field:stock.location.category,name:0
+msgid "Name"
+msgstr ""
+
+#. module: wms
+#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
+#: model:ir.ui.menu,name:wms.menu_stock_location_category
+#: view:stock.location.category:0
+msgid "Stock location category"
+msgstr ""
+
+#. module: wms
+#: help:stock.location.category,code:0
+msgid "Code of the category of stock location"
+msgstr ""
+
+#. module: wms
 #: selection:product.product,location_type:0
 msgid "Fixed"
+msgstr ""
+
+#. module: wms
+#: help:stock.location,categ_id:0
+msgid "Category of this location"
+msgstr ""
+
+#. module: wms
+#: field:stock.location.category,code:0
+msgid "Code"
+msgstr ""
+
+#. module: wms
+#: model:ir.model,name:wms.model_product_product
+msgid "Product"
+msgstr ""
+
+#. module: wms
+#: constraint:product.product:0
+msgid "Error: Invalid ean code"
 msgstr ""
 

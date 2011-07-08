@@ -30,9 +30,9 @@ class stock_location_category(osv.osv):
     _description = 'Category of stock location'
 
     _columns = {
-        'name': fields.char('Name', size=64, required=True),
-        'code': fields.char('Code', size=64, required=True),
-        'active': fields.boolean('Active', ),
+        'name': fields.char('Name', size=64, required=True, help='Name of the category of stock location'),
+        'code': fields.char('Code', size=64, required=True, help='Code of the category of stock location'),
+        'active': fields.boolean('Active', help='This field allows to hide the category without removing it'),
     }
 
 stock_location_category()
@@ -41,8 +41,8 @@ class stock_location(osv.osv):
     _inherit = 'stock.location'
 
     _columns = {
-        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', ),
-        'categ_id': fields.many2one('stock.location.category', 'Category', ),
+        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help='Warehouse where is located this location'),
+        'categ_id': fields.many2one('stock.location.category', 'Category', help='Category of this location'),
     }
 
 stock_location()
