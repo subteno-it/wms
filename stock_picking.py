@@ -50,7 +50,7 @@ class stock_picking(osv.osv):
 
         return crossdock_location_id
 
-    def test_finished(self, cr, uid, ids, context=None):
+    def action_move(self, cr, uid, ids, context=None):
         """
         Redefine test_finished to add crossdocking management
         """
@@ -77,6 +77,8 @@ class stock_picking(osv.osv):
                     in_move_quantity = in_move.product_qty
 
                     for out_move in stock_move_obj.browse(cr, uid, out_move_ids, context=context):
+                        if in_move.location_dest_id.warehouse_id == False:
+                            raise osv.except_osv(_('Configuration error'), _('Warehouse missing on location %s' % in_move.location_dest_id.name))
                         # Retrieve the total available quantity (reserved for this move or not reserved)
                         search_domain = [
                             ('id', '!=', in_move.id),
@@ -121,7 +123,7 @@ class stock_picking(osv.osv):
                         else:
                             break
 
-        return super(stock_picking, self).test_finished(cr, uid, ids)
+        return super(stock_picking, self).action_move(cr, uid, ids)
 
     def action_cancel(self, cr, uid, ids, context=None):
         """
