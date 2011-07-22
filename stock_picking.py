@@ -100,7 +100,7 @@ class stock_picking(osv.osv):
                                 'product_qty': crossdock_quantity,
                                 'location_dest_id': crossdock_location_id,
                                 'move_dest_id': out_move.id,
-                                'state': 'asigned',
+                                'state': 'assigned',
                             }
                             stock_move_obj.write(cr, uid, [out_move.id], {'location_id': crossdock_location_id}, context=context)
                             if in_move_quantity > 0:
