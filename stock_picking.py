@@ -85,7 +85,7 @@ class stock_picking(osv.osv):
                             ('location_dest_id', 'child_of', in_move.location_dest_id.warehouse_id.lot_stock_id.id),
                             ('move_dest_id', 'in', [out_move.id, False]),
                             ('product_id', '=', out_move.product_id.id),
-                            ('state', '=', 'done')
+                            ('state', '=', 'assigned')
                         ]
                         available_stock_move_ids = stock_move_obj.search(cr, uid, search_domain, context=context)
                         available_stock_move_data = stock_move_obj.read(cr, uid, available_stock_move_ids, ['product_qty'], context=context)
