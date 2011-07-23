@@ -24,6 +24,7 @@
 
 from osv import osv
 
+
 class stock_picking(osv.osv):
     _inherit = 'stock.picking'
 

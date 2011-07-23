@@ -25,6 +25,7 @@
 from osv import osv
 from osv import fields
 
+
 class stock_location_category(osv.osv):
     _name = 'stock.location.category'
     _description = 'Category of stock location'
@@ -36,6 +37,7 @@ class stock_location_category(osv.osv):
     }
 
 stock_location_category()
+
 
 class stock_location(osv.osv):
     _inherit = 'stock.location'
