@@ -82,7 +82,7 @@ class stock_picking(osv.osv):
                             stock_move_obj.write(cr, uid, [in_move.id], {'location_dest_id': in_move.location_dest_id.warehouse_id.crossdock_location_id.id}, context=context)
                     else:
                         # Search if we have to reserve for this product
-                        out_move_ids = stock_move_obj.search(cr, uid, [('picking_id.type', '=', 'out'), ('picking_id.state', 'in', ('confirmed','assigned')), ('state', '=', 'confirmed'), ('product_id', '=', in_move.product_id.id)], order='date', context=context)
+                        out_move_ids = stock_move_obj.search(cr, uid, [('picking_id.type', '=', 'out'), ('picking_id.state', 'in', ('confirmed', 'assigned')), ('state', '=', 'confirmed'), ('product_id', '=', in_move.product_id.id)], order='date', context=context)
 
                         # Store the current in_move quantity in a separate variable
                         in_move_quantity = in_move.product_qty
