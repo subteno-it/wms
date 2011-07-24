@@ -29,7 +29,7 @@
     'description': """This module allows to manage crossdocking in warehouses
 
 /!\ WARNING /!\\
-THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !""",
+THIS MODULE DOESN'T MANAGE PRODUCTS LOTS YET !""",
     'author': 'SYLEAM',
     'website': 'http://www.syleam.fr/',
     'depends': [
@@ -45,7 +45,7 @@ THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !""",
         'stock_location_view.xml',
         'product_product_view.xml',
         'stock_warehouse_view.xml',
-        'stock_location_data.xml',
+        'data/stock_location.xml',
     ],
     'demo_xml': [],
     'test': [
