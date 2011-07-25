@@ -33,10 +33,6 @@ class product_product(osv.osv):
         'location_type': fields.property(None, method=True, string='Location type', view_load=True, type='selection', selection=[('compute', 'Compute'), ('fixed', 'Fixed'), ('crossdock', 'Crossdock')], help='Type of location for this product'),
     }
 
-    _defaults = {
-        'location_type': 'compute',
-    }
-
 product_product()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

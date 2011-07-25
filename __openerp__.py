@@ -46,6 +46,7 @@ THIS MODULE DOESN'T MANAGE PRODUCTS LOTS YET !""",
         'product_product_view.xml',
         'stock_warehouse_view.xml',
         'stock_location_data.xml',
+        'ir_property_data.xml',
     ],
     'demo_xml': [],
     'test': [
