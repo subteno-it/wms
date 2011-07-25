@@ -30,7 +30,7 @@ class product_product(osv.osv):
     _inherit = 'product.product'
 
     _columns = {
-        'location_type': fields.selection([('compute', 'Compute'), ('fixed', 'Fixed'), ('crossdock', 'Crossdock')], 'Location type', help='Type of location for this product'),
+        'location_type': fields.property(None, method=True, string='Location type', view_load=True, type='selection', selection=[('compute', 'Compute'), ('fixed', 'Fixed'), ('crossdock', 'Crossdock')], help='Type of location for this product'),
     }
 
     _defaults = {
