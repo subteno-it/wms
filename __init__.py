@@ -25,7 +25,7 @@
 
 import stock_location
 import product_product
-import stock_picking
+import stock
 import stock_warehouse
 import wizard
 
