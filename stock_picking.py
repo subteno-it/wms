@@ -24,6 +24,7 @@
 
 from osv import osv
 from tools.translate import _
+import pdb
 
 
 class stock_picking(osv.osv):
@@ -69,6 +70,7 @@ class stock_picking(osv.osv):
 
             # We take all moves, ordered by date
             in_move_ids = stock_move_obj.search(cr, uid, [('picking_id', 'in', in_ids)], order='date', context=context)
+#            pdb.set_trace()
             for in_move in stock_move_obj.browse(cr, uid, in_move_ids, context=context):
                 # Verify the product is allowed for crossdock management
                 if in_move.product_id and in_move.product_id.location_type == 'crossdock':
@@ -89,17 +91,36 @@ class stock_picking(osv.osv):
 
                         for out_move in stock_move_obj.browse(cr, uid, out_move_ids, context=context):
 
-                            # Retrieve the total available quantity (reserved for this move or not reserved)
+                            # Retrieve the total reserved quantity
                             search_domain = [
                                 ('id', '!=', in_move.id),
                                 ('location_dest_id', 'child_of', in_move.location_dest_id.warehouse_id.lot_stock_id.id),
-                                ('move_dest_id', 'in', [out_move.id, False]),
+                                ('move_dest_id', '=', out_move.id),
+                                ('product_id', '=', out_move.product_id.id),
+                                ('state', '=', 'assigned')
+                            ]
+                            reserved_stock_move_ids = stock_move_obj.search(cr, uid, search_domain, context=context)
+                            reserved_stock_move_data = stock_move_obj.read(cr, uid, reserved_stock_move_ids, ['product_qty'], context=context)
+                            reserved_quantity = sum([data['product_qty'] for data in reserved_stock_move_data if data['product_qty']])
+
+                            # If all quantity is already reserved, continue to the next
+                            if reserved_quantity >= out_move.product_qty:
+                                continue
+
+                            # Retrieve the total available quantity
+                            search_domain = [
+                                ('id', '!=', in_move.id),
+                                ('location_dest_id', 'child_of', in_move.location_dest_id.warehouse_id.lot_stock_id.id),
+                                ('move_dest_id', '=', False),
                                 ('product_id', '=', out_move.product_id.id),
                                 ('state', '=', 'assigned')
                             ]
                             available_stock_move_ids = stock_move_obj.search(cr, uid, search_domain, context=context)
                             available_stock_move_data = stock_move_obj.read(cr, uid, available_stock_move_ids, ['product_qty'], context=context)
                             available_quantity = sum([data['product_qty'] for data in available_stock_move_data if data['product_qty']])
+
+                            # Sum the available and reserved quantity
+                            available_quantity = available_quantity + reserved_quantity
 
                             # We have receipt enough product, reserve it
                             if out_move.product_qty - available_quantity <= in_move_quantity:
