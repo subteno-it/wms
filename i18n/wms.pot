@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 6.0.2\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-07-08 13:35+0000\n"
-"PO-Revision-Date: 2011-07-08 13:35+0000\n"
+"POT-Creation-Date: 2011-07-27 20:42+0000\n"
+"PO-Revision-Date: 2011-07-27 20:42+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,6 +21,11 @@ msgid "Category"
 msgstr ""
 
 #. module: wms
+#: field:wms.report.stock.available,prodlot_id:0
+msgid "Production lot"
+msgstr ""
+
+#. module: wms
 #: help:stock.location,warehouse_id:0
 msgid "Warehouse where is located this location"
 msgstr ""
@@ -31,12 +36,21 @@ msgid "Category of stock location"
 msgstr ""
 
 #. module: wms
-#: model:ir.module.module,shortdesc:wms.module_meta_information
-msgid "Warehouse Management System"
+#: model:ir.actions.act_window,name:wms.act_open_wms_report_stock_available_view
+#: model:ir.model,name:wms.model_wms_report_stock_available
+#: model:ir.ui.menu,name:wms.menu_wms_report_stock_available
+#: view:wms.report.stock.available:0
+msgid "Stock available"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Label"
 msgstr ""
 
 #. module: wms
 #: model:ir.model,name:wms.model_stock_location
+#: field:wms.report.stock.available,location_id:0
 msgid "Location"
 msgstr ""
 
@@ -48,15 +62,25 @@ msgstr ""
 #. module: wms
 #: model:ir.model,name:wms.model_stock_warehouse
 #: field:stock.location,warehouse_id:0
+#: field:wms.report.stock.available,warehouse_id:0
 msgid "Warehouse"
 msgstr ""
 
 #. module: wms
-#: model:ir.module.module,description:wms.module_meta_information
-msgid "This module allows to manage crossdocking in warehouses\n"
-"\n"
-"/!\\ WARNING /!\\\n"
-"THIS MODULE DOESN'T MANAGE PRODCTS LOTS YET !"
+#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
+#: model:ir.ui.menu,name:wms.menu_stock_location_category
+#: view:stock.location.category:0
+msgid "Stock location category"
+msgstr ""
+
+#. module: wms
+#: field:wms.report.stock.available,uom_id:0
+msgid "UOM"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Search stock available"
 msgstr ""
 
 #. module: wms
@@ -111,6 +135,11 @@ msgid "Crossdock location"
 msgstr ""
 
 #. module: wms
+#: field:wms.report.stock.available,tracking_id:0
+msgid "Tracking"
+msgstr ""
+
+#. module: wms
 #: selection:product.product,location_type:0
 msgid "Compute"
 msgstr ""
@@ -121,10 +150,9 @@ msgid "Name"
 msgstr ""
 
 #. module: wms
-#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
-#: model:ir.ui.menu,name:wms.menu_stock_location_category
-#: view:stock.location.category:0
-msgid "Stock location category"
+#: model:ir.model,name:wms.model_product_product
+#: field:wms.report.stock.available,product_id:0
+msgid "Product"
 msgstr ""
 
 #. module: wms
@@ -148,12 +176,17 @@ msgid "Code"
 msgstr ""
 
 #. module: wms
-#: model:ir.model,name:wms.model_product_product
-msgid "Product"
+#: field:wms.report.stock.available,qty:0
+msgid "Qty"
 msgstr ""
 
 #. module: wms
 #: constraint:product.product:0
 msgid "Error: Invalid ean code"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Total"
 msgstr ""
 
