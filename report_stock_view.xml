@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        ##############################################################################
+        #
+        #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
+        #    Copyright (C) 2011 SYLEAM ([http://www.syleam.fr/])
+        #              Christophe CHAUVET [christophe.chauvet@syleam.fr]
+        #
+        #    This file is a part of wms
+        #
+        #    wms is free software: you can redistribute it and/or modify
+        #    it under the terms of the GNU Affero General Public License as published by
+        #    the Free Software Foundation, either version 3 of the License, or
+        #    (at your option) any later version.
+        #
+        #    wms is distributed in the hope that it will be useful,
+        #    but WITHOUT ANY WARRANTY; without even the implied warranty of
+        #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        #    GNU Affero General Public License for more details.
+        #
+        #    You should have received a copy of the GNU Affero General Public License
+        #    along with this program.  If not, see [http://www.gnu.org/licenses/].
+        #
+        ##############################################################################
+
+        <!-- ************************************************************** -->
+        <!-- * WMS Report Stock Available ********************************* -->
+        <!-- ************************************************************** -->
+        <record id="view_wms_report_stock_available_tree" model="ir.ui.view">
+            <field name="name">wms.report.stock.available.tree</field>
+            <field name="model">wms.report.stock.available</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <tree string="Stock available">
+                    <field name="product_id"/>
+                    <field name="uom_id"/>
+                    <field name="prodlot_id"/>
+                    <field name="tracking_id"/>
+                    <field name="location_id"/>
+                    <field name="qty" sum="Total"/>
+                    <field name="warehouse_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_wms_report_stock_available_form" model="ir.ui.view">
+            <field name="name">wms.report.stock.available.form</field>
+            <field name="model">wms.report.stock.available</field>
+            <field name="type">form</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <form string="Stock available">
+                    <field name="product_id" select="1"/>
+                    <field name="uom_id" select="2"/>
+                    <field name="prodlot_id" select="1"/>
+                    <field name="tracking_id" select="1"/>
+                    <field name="warehouse_id" select="1"/>
+                    <field name="location_id" select="1"/>
+                    <field name="qty" select="2"/>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_wms_report_stock_available_search" model="ir.ui.view">
+            <field name="name">wms.report.stock.available.form</field>
+            <field name="model">wms.report.stock.available</field>
+            <field name="type">form</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Search stock available">
+                    <field name="product_id"/>
+                    <field name="uom_id" widget="selection"/>
+                    <separator string="Label" colspan="4"/>
+                    <field name="prodlot_id"/>
+                    <field name="tracking_id"/>
+                    <separator orientation="vertical"/>
+                    <field name="location_id"/>
+                    <field name="warehouse_id" widget="selection"/>
+                </search>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="act_open_wms_report_stock_available_view">
+            <field name="name">Stock available</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wms.report.stock.available</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_wms_report_stock_available_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="act_open_wms_report_stock_available_view_form">
+            <field name="act_window_id" ref="act_open_wms_report_stock_available_view"/>
+            <field name="sequence" eval="20"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wms_report_stock_available_form"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="act_open_wms_report_stock_available_view_tree">
+            <field name="act_window_id" ref="act_open_wms_report_stock_available_view"/>
+            <field name="sequence" eval="10"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_wms_report_stock_available_tree"/>
+        </record>
+
+        <menuitem id="menu_wms_report_stock_available"
+            parent="stock.next_id_61"
+            sequence="50"
+            action="act_open_wms_report_stock_available_view"/>
+
+    </data>
+</openerp>
