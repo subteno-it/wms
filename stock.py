@@ -70,7 +70,7 @@ class stock_picking(osv.osv):
             stock_move_obj = self.pool.get('stock.move')
 
             # We take all moves, ordered by date
-            in_move_ids = stock_move_obj.search(cr, uid, [('picking_id', 'in', in_ids), ('state', 'not in', ('done', 'cancel')) ], order='date', context=context)
+            in_move_ids = stock_move_obj.search(cr, uid, [('picking_id', 'in', in_ids), ('state', 'not in', ('done', 'cancel'))], order='date', context=context)
             for in_move in stock_move_obj.browse(cr, uid, in_move_ids, context=context):
                 # Verify the product is allowed for crossdock management
                 if in_move.product_id and in_move.product_id.location_type == 'crossdock':
