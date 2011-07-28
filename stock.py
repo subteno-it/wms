@@ -69,8 +69,8 @@ class stock_picking(osv.osv):
         if in_ids:
             stock_move_obj = self.pool.get('stock.move')
 
-            # We take all moves, ordered by date
-            in_move_ids = stock_move_obj.search(cr, uid, [('picking_id', 'in', in_ids), ('state', 'not in', ('done', 'cancel'))], order='date', context=context)
+            # We take all moves, ordered by date (default in stock.move object)
+            in_move_ids = stock_move_obj.search(cr, uid, [('picking_id', 'in', in_ids), ('state', 'not in', ('done', 'cancel'))], context=context)
             for in_move in stock_move_obj.browse(cr, uid, in_move_ids, context=context):
                 # Verify the product is allowed for crossdock management
                 if in_move.product_id and in_move.product_id.location_type == 'crossdock':
@@ -83,8 +83,8 @@ class stock_picking(osv.osv):
                             stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'location_id': in_move.location_dest_id.warehouse_id.crossdock_location_id.id}, context=context)
                             stock_move_obj.write(cr, uid, [in_move.id], {'location_dest_id': in_move.location_dest_id.warehouse_id.crossdock_location_id.id}, context=context)
                     else:
-                        # Search if we have to reserve for this product
-                        out_move_ids = stock_move_obj.search(cr, uid, [('picking_id.type', '=', 'out'), ('picking_id.state', 'in', ('confirmed', 'assigned')), ('state', '=', 'confirmed'), ('product_id', '=', in_move.product_id.id)], order='date', context=context)
+                        # Search if we have to reserve for this product, ordered by date (default in stock.move object)
+                        out_move_ids = stock_move_obj.search(cr, uid, [('picking_id.type', '=', 'out'), ('picking_id.state', 'in', ('confirmed', 'assigned')), ('state', '=', 'confirmed'), ('product_id', '=', in_move.product_id.id)], context=context)
 
                         # Store the current in_move quantity in a separate variable
                         in_move_quantity = in_move.product_qty
