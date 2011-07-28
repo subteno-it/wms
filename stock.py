@@ -90,6 +90,7 @@ class stock_picking(osv.osv):
                         in_move_quantity = in_move.product_qty
 
                         for out_move in stock_move_obj.browse(cr, uid, out_move_ids, context=context):
+                            # If stock_move have a sale_order_line in make_to_order then continue because already reserved an other picking
                             if not out_move.sale_line_id or (out_move.sale_line_id and out_move.sale_line_id.type == 'make_to_stock'):
                                 # Retrieve the total reserved quantity
                                 search_domain = [
