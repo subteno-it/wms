@@ -66,6 +66,7 @@ class stock_picking(osv.osv):
             else:
                 other_ids.append(picking_id.id)
 
+        # FIXME : Search if this picking is related with an other picking (backorder_id)
         if in_ids:
             stock_move_obj = self.pool.get('stock.move')
 
@@ -80,8 +81,35 @@ class stock_picking(osv.osv):
                     if in_move.move_dest_id and in_move.move_dest_id.picking_id and in_move.move_dest_id.picking_id.type == "out":
                         # Verify if location destination is already affected to crossdock
                         if in_move.move_dest_id.location_id.id != in_move.location_dest_id.warehouse_id.crossdock_location_id.id:
-                            stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'location_id': in_move.location_dest_id.warehouse_id.crossdock_location_id.id}, context=context)
-                            stock_move_obj.write(cr, uid, [in_move.id], {'location_dest_id': in_move.location_dest_id.warehouse_id.crossdock_location_id.id}, context=context)
+                            pdb.set_trace()
+                            crossdock_location_id = in_move.location_dest_id.warehouse_id.crossdock_location_id.id
+                            if in_move.product_qty == in_move.move_dest_id.product_qty:
+                                stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'location_id': crossdock_location_id}, context=context)
+                                stock_move_obj.write(cr, uid, [in_move.id], {'location_dest_id': crossdock_location_id}, context=context)
+                            elif in_move.product_qty < in_move.move_dest_id.product_qty:
+                                out_move_quantity = in_move.move_dest_id.product_qty - in_move.product_qty
+                                crossdock_quantity = in_move.move_dest_id.product_qty - out_move_quantity
+                                data = {
+                                    'product_qty': crossdock_quantity,
+                                    'location_id': crossdock_location_id,
+                                    'move_dest_id': False,
+                                    'state': 'assigned',
+                                }
+                                new_move_id = stock_move_obj.copy(cr, uid, in_move.move_dest_id.id, data, context=context)
+                                stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'product_qty': out_move_quantity}, context=context)
+                                stock_move_obj.write(cr, uid, [in_move.id], {'location_dest_id': crossdock_location_id, 'move_dest_id': new_move_id}, context=context)
+                            # in_move.product_qty > in_move.move_dest_id.product_qty:
+                            else:
+                                out_move_quantity = in_move.product_qty - in_move.move_dest_id.product_qty
+                                crossdock_quantity = in_move.product_qty - out_move_quantity
+                                data = {
+                                    'product_qty': out_move_quantity,
+                                    'move_dest_id': False,
+                                    'state': 'assigned',
+                                }
+                                new_move_id = stock_move_obj.copy(cr, uid, in_move.id, data, context=context)
+                                stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'location_id': crossdock_location_id}, context=context)
+                                stock_move_obj.write(cr, uid, [in_move.id], {'product_qty': crossdock_quantity, 'location_dest_id': crossdock_location_id}, context=context)
                     else:
                         # Search if we have to reserve for this product, ordered by date (default in stock.move object)
                         out_move_ids = stock_move_obj.search(cr, uid, [('picking_id.type', '=', 'out'), ('picking_id.state', 'in', ('confirmed', 'assigned')), ('state', '=', 'confirmed'), ('product_id', '=', in_move.product_id.id)], context=context)
