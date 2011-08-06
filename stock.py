@@ -24,7 +24,6 @@
 
 from osv import osv
 from tools.translate import _
-import pdb
 
 
 class stock_picking(osv.osv):
@@ -59,14 +58,12 @@ class stock_picking(osv.osv):
         """
         in_ids = []
         other_ids = []
-        #pdb.set_trace()
         for picking_id in self.browse(cr, uid, ids, context=context):
             if picking_id.type == 'in':
                 in_ids.append(picking_id.id)
             else:
                 other_ids.append(picking_id.id)
 
-        # FIXME : Search if this picking is related with an other picking (backorder_id)
         if in_ids:
             stock_move_obj = self.pool.get('stock.move')
 
@@ -81,7 +78,6 @@ class stock_picking(osv.osv):
                     if in_move.move_dest_id and in_move.move_dest_id.picking_id and in_move.move_dest_id.picking_id.type == "out":
                         # Verify if location destination is already affected to crossdock
                         if in_move.move_dest_id.location_id.id != in_move.location_dest_id.warehouse_id.crossdock_location_id.id:
-                            #pdb.set_trace()
                             crossdock_location_id = in_move.location_dest_id.warehouse_id.crossdock_location_id.id
                             if in_move.product_qty == in_move.move_dest_id.product_qty:
                                 stock_move_obj.write(cr, uid, [in_move.move_dest_id.id], {'location_id': crossdock_location_id}, context=context)
@@ -118,7 +114,6 @@ class stock_picking(osv.osv):
                                 in_move_backorder_ids = stock_move_obj.search(cr, uid, [('picking_id', '=', in_picking_backorder_id.id), ('product_id', '=', in_move.product_id.id), ('move_dest_id', '!=', False)], context=context)
                                 if in_move_backorder_ids:
                                     # We must have only 1 result so take the first, if >1, we have an issue
-                                    #pdb.set_trace()
                                     in_move_backorder_id = stock_move_obj.browse(cr, uid, in_move_backorder_ids[0], context=context)
                                     crossdock_location_id = in_move.location_dest_id.warehouse_id.crossdock_location_id.id
                                     out_move_quantity = in_move_backorder_id.move_dest_id.product_qty - in_move.product_qty
