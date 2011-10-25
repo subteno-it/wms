@@ -4,6 +4,7 @@
 #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
 #    Copyright (C) 2011 SYLEAM Info Services (<http://www.Syleam.fr/>)
 #              Sylvain Garancher <sylvain.garancher@syleam.fr>
+#              Sebastien LANGE <sebastien.lange@syleam.fr>
 #
 #    This file is a part of wms
 #
@@ -72,7 +73,7 @@ class stock_picking(osv.osv):
             for in_move in stock_move_obj.browse(cr, uid, in_move_ids, context=context):
                 # Verify the product is allowed for crossdock management
                 if in_move.product_id and in_move.product_id.location_type == 'crossdock':
-                    if in_move.location_dest_id.warehouse_id == False:
+                    if not in_move.location_dest_id.warehouse_id:
                         raise osv.except_osv(_('Configuration error'), _('Warehouse missing on location %s' % in_move.location_dest_id.name))
                     # Verifiy if the move is already for a stock picking out
                     if in_move.move_dest_id and in_move.move_dest_id.picking_id and in_move.move_dest_id.picking_id.type == "out":
