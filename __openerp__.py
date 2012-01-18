@@ -24,7 +24,7 @@
 
 {
     'name': 'Warehouse Management System',
-    'version': '1.0',
+    'version': '1.1',
     'category': 'Generic Modules/Inventory Control',
     'description': """This module allows to manage crossdocking in warehouses
 
