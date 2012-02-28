@@ -49,53 +49,55 @@ class ReportStockReal(osv.osv):
     def init(self, cr):
         drop_view_if_exists(cr, 'wms_report_stock_available')
         cr.execute("""
-            CREATE OR REPLACE VIEW wms_report_stock_available as
-            SELECT rs.id AS id,
-                   rs.warehouse_id AS warehouse_id,
-                   rs.location_dest_id AS location_id,
-                   rs.product_id AS product_id,
-                   rs.product_uom AS uom_id,
-                   rs.prodlot_id AS prodlot_id,
-                   rs.tracking_id AS tracking_id,
-                   rs.qty AS qty
-            FROM (
-            SELECT  min(m0.id) as id, m0.product_id, m0.location_dest_id,
-                    m0.product_uom, m0.prodlot_id, m0.tracking_id,
+            CREATE OR REPLACE VIEW wms_report_stock_available AS (
+                SELECT max(id) AS id,
                     (SELECT warehouse_id
                      FROM   stock_location
-                     WHERE  id=m0.location_dest_id) as warehouse_id,
-                    (SELECT coalesce(sum(m11.product_qty), 0)
-                     FROM   stock_move m11
-                     WHERE  m11.state = m0.state
-                     AND    m11.product_id = m0.product_id
-                     AND    m11.prodlot_id IS NOT DISTINCT FROM m0.prodlot_id
-                     AND    m11.tracking_id IS NOT DISTINCT FROM m0.tracking_id
-                     AND    m11.location_dest_id = m0.location_dest_id
-                     AND    m11.location_id != m0.location_dest_id
-                     ) -
-                    (SELECT coalesce(sum(m14.product_qty), 0)
-                     FROM   stock_move m14
-                     WHERE  m14.state= m0.state
-                     AND    m14.product_id = m0.product_id
-                     AND    m14.prodlot_id IS NOT DISTINCT FROM m0.prodlot_id
-                     AND    m14.tracking_id IS NOT DISTINCT FROM m0.tracking_id
-                     AND    m14.location_id = m0.location_dest_id
-                     AND    m14.location_dest_id != m0.location_dest_id) as qty
-            FROM   stock_move m0
-            WHERE  m0.state='done'
-            AND    location_dest_id in (SELECT id
-                                        FROM   stock_location
-                                        WHERE  usage = 'internal')
-            GROUP by
-                   location_dest_id,
-                   m0.state,
-                   m0.product_id,
-                   m0.prodlot_id,
-                   m0.tracking_id,
-                   m0.product_uom
-            ) rs
-            WHERE rs.qty > 0
-            ORDER BY rs.product_id
+                     WHERE  id=report.location_id) AS warehouse_id,
+                    location_id,
+                    product_id,
+                    (SELECT
+                       product_template.uom_id
+                     FROM
+                       product_product,
+                       product_template
+                     WHERE
+                       product_product.product_tmpl_id = product_template.id AND
+                       product_product.id = report.product_id) AS uom_id,
+                    prodlot_id,
+                    tracking_id,
+                    sum(qty) AS product_qty
+                FROM (
+                    SELECT -max(sm.id) AS id,
+                        sm.location_id,
+                        sm.product_id,
+                        sm.prodlot_id,
+                        sm.tracking_id,
+                        -sum(sm.product_qty /uo.factor) AS qty
+                    FROM stock_move as sm
+                    LEFT JOIN stock_location sl
+                        ON (sl.id = sm.location_id)
+                    LEFT JOIN product_uom uo
+                        ON (uo.id=sm.product_uom)
+                    WHERE state = 'done' AND sm.location_id != sm.location_dest_id
+                    GROUP BY sm.location_id, sm.product_id, sm.product_uom, sm.prodlot_id, sm.tracking_id
+                    UNION ALL
+                    SELECT max(sm.id) AS id,
+                        sm.location_dest_id AS location_id,
+                        sm.product_id,
+                        sm.prodlot_id,
+                        sm.tracking_id,
+                        sum(sm.product_qty /uo.factor) AS qty
+                    FROM stock_move AS sm
+                    LEFT JOIN stock_location sl
+                        ON (sl.id = sm.location_dest_id)
+                    LEFT JOIN product_uom uo
+                        ON (uo.id=sm.product_uom)
+                    WHERE sm.state = 'done' AND sm.location_id != sm.location_dest_id
+                    GROUP BY sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id, sm.tracking_id
+                ) AS report
+                GROUP BY location_id, product_id, prodlot_id, tracking_id
+                HAVING sum(qty) >0)
         """)
 
 ReportStockReal()
