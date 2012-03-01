@@ -66,7 +66,7 @@ class ReportStockReal(osv.osv):
                        product_product.id = report.product_id) AS uom_id,
                     prodlot_id,
                     tracking_id,
-                    sum(qty) AS product_qty
+                    sum(qty) AS qty
                 FROM (
                     SELECT -max(sm.id) AS id,
                         sm.location_id,
