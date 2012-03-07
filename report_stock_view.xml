@@ -39,7 +39,7 @@
                     <field name="prodlot_id"/>
                     <field name="tracking_id"/>
                     <field name="location_id"/>
-                    <field name="qty" sum="Total"/>
+                    <field name="product_qty" sum="Total"/>
                     <field name="warehouse_id"/>
                 </tree>
             </field>
@@ -58,7 +58,7 @@
                     <field name="tracking_id" select="1"/>
                     <field name="warehouse_id" select="1"/>
                     <field name="location_id" select="1"/>
-                    <field name="qty" select="2"/>
+                    <field name="product_qty" select="2"/>
                 </form>
             </field>
         </record>

@@ -50,4 +50,18 @@ class stock_location(osv.osv):
 
 stock_location()
 
+class stock_picking(osv.osv):
+    _inherit = 'stock.picking'
+
+    _columns = {
+        'user_id': fields.many2one('res.users', 'User', help='User has created this picking'),
+    }
+
+    _defaults = {
+        'user_id': lambda obj, cr, uid, context: uid,
+    }
+
+stock_picking()
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

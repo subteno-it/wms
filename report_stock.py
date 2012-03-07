@@ -25,6 +25,7 @@
 from osv import osv
 from osv import fields
 from tools.sql import drop_view_if_exists
+import decimal_precision as dp
 
 
 class ReportStockReal(osv.osv):
@@ -36,6 +37,17 @@ class ReportStockReal(osv.osv):
     _auto = False
     _rec_name = 'product_id'
 
+    USAGE_SELECTION = [
+        ('supplier', 'Supplier Location'),
+        ('view', 'View'),
+        ('internal', 'Internal Location'),
+        ('customer', 'Customer Location'),
+        ('inventory', 'Inventory'),
+        ('procurement', 'Procurement'),
+        ('production', 'Production'),
+        ('transit', 'Transit Location for Inter-Companies Transfers')
+    ]
+
     _columns = {
         'product_id': fields.many2one('product.product', 'Product', readonly=True),
         'uom_id': fields.many2one('product.uom', 'UOM', readonly=True),
@@ -43,7 +55,8 @@ class ReportStockReal(osv.osv):
         'tracking_id': fields.many2one('stock.tracking', 'Tracking', readonly=True),
         'location_id': fields.many2one('stock.location', 'Location', readonly=True),
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', readonly=True),
-        'qty': fields.float('Qty', readonly=True),
+        'usage': fields.related('location_id', 'usage', type='selection', selection=USAGE_SELECTION, string='Location Type', help='Help note'),
+        'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True),
     }
 
     def init(self, cr):
@@ -66,7 +79,7 @@ class ReportStockReal(osv.osv):
                        product_product.id = report.product_id) AS uom_id,
                     prodlot_id,
                     tracking_id,
-                    sum(qty) AS qty
+                    sum(qty) AS product_qty
                 FROM (
                     SELECT -max(sm.id) AS id,
                         sm.location_id,
