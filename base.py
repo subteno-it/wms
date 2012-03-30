@@ -2,8 +2,8 @@
 ##############################################################################
 #
 #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
-#    Copyright (C) 2011 SYLEAM Info Services (<http://www.Syleam.fr/>)
-#              Sylvain Garancher <sylvain.garancher@syleam.fr>
+#    Copyright (C) 2012 SYLEAM Info Services (<http://www.syleam.fr/>)
+#              Sebastien LANGE <sebastien.lange@syleam.fr>
 #
 #    This file is a part of wms
 #
@@ -22,9 +22,17 @@
 #
 ##############################################################################
 
+from osv import osv
+from osv import fields
 
-import base
-import stock
-import report_stock
+
+class res_users(osv.osv):
+    _inherit = 'res.users'
+
+    _columns = {
+        'warehouse_ids': fields.many2many('stock.warehouse', 'res_users_warehouse_rel', 'user_id', 'warehouse_id', 'Warehouses', help='Help note'),
+    }
+
+res_users()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
