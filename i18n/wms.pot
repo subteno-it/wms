@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenERP Server 6.0.2\n"
-"Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2011-07-27 20:42+0000\n"
-"PO-Revision-Date: 2011-07-27 20:42+0000\n"
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-07 09:45+0000\n"
+"PO-Revision-Date: 2012-10-07 09:45+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,6 +26,24 @@ msgid "Production lot"
 msgstr ""
 
 #. module: wms
+#: help:wms.report.stock.available,usage:0
+msgid "* Supplier Location: Virtual location representing the source location for products coming from your suppliers\n"
+"                       \n"
+"* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products\n"
+"                       \n"
+"* Internal Location: Physical locations inside your own warehouses,\n"
+"                       \n"
+"* Customer Location: Virtual location representing the destination location for products sent to your customers\n"
+"                       \n"
+"* Inventory: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)\n"
+"                       \n"
+"* Procurement: Virtual location serving as temporary counterpart for procurement operations when the source (supplier or production) is not known yet. This location should be empty when the procurement scheduler has finished running.\n"
+"                       \n"
+"* Production: Virtual counterpart location for production operations: this location consumes the raw material and produces finished products\n"
+"                      "
+msgstr ""
+
+#. module: wms
 #: help:stock.location,warehouse_id:0
 msgid "Warehouse where is located this location"
 msgstr ""
@@ -36,34 +54,105 @@ msgid "Category of stock location"
 msgstr ""
 
 #. module: wms
-#: model:ir.actions.act_window,name:wms.act_open_wms_report_stock_available_view
 #: model:ir.model,name:wms.model_wms_report_stock_available
-#: model:ir.ui.menu,name:wms.menu_wms_report_stock_available
-#: view:wms.report.stock.available:0
 msgid "Stock available"
 msgstr ""
 
 #. module: wms
+#: selection:wms.report.stock.available,usage:0
+msgid "Internal Location"
+msgstr ""
+
+#. module: wms
 #: view:wms.report.stock.available:0
-msgid "Label"
+msgid "Group By..."
 msgstr ""
 
 #. module: wms
-#: model:ir.model,name:wms.model_stock_location
-#: field:wms.report.stock.available,location_id:0
-msgid "Location"
+#: view:wms.report.stock.available:0
+msgid "Internal"
 msgstr ""
 
 #. module: wms
-#: model:ir.model,name:wms.model_stock_picking
-msgid "Picking List"
+#: selection:wms.report.stock.available,usage:0
+msgid "Inventory"
 msgstr ""
 
 #. module: wms
-#: model:ir.model,name:wms.model_stock_warehouse
-#: field:stock.location,warehouse_id:0
-#: field:wms.report.stock.available,warehouse_id:0
-msgid "Warehouse"
+#: view:wms.report.stock.available:0
+msgid "Supplier"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+#: field:wms.report.stock.available,uom_id:0
+msgid "UOM"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+#: field:wms.report.stock.available,product_id:0
+msgid "Product"
+msgstr ""
+
+#. module: wms
+#: help:stock.location.category,name:0
+msgid "Name of the category of stock location"
+msgstr ""
+
+#. module: wms
+#: constraint:stock.location:0
+msgid "Error msg is in raise"
+msgstr ""
+
+#. module: wms
+#: field:wms.report.stock.available,product_qty:0
+msgid "Quantity"
+msgstr ""
+
+#. module: wms
+#: selection:wms.report.stock.available,usage:0
+msgid "Customer Location"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Internal Locations"
+msgstr ""
+
+#. module: wms
+#: field:stock.location.category,active:0
+msgid "Active"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Extended Filters..."
+msgstr ""
+
+#. module: wms
+#: help:stock.location.category,active:0
+msgid "This field allows to hide the category without removing it"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Customer"
+msgstr ""
+
+#. module: wms
+#: field:wms.report.stock.available,usage:0
+msgid "Location Type"
+msgstr ""
+
+#. module: wms
+#: field:stock.location.category,name:0
+msgid "Name"
+msgstr ""
+
+#. module: wms
+#: view:wms.report.stock.available:0
+msgid "Supplier Locations"
 msgstr ""
 
 #. module: wms
@@ -74,85 +163,13 @@ msgid "Stock location category"
 msgstr ""
 
 #. module: wms
-#: field:wms.report.stock.available,uom_id:0
-msgid "UOM"
-msgstr ""
-
-#. module: wms
 #: view:wms.report.stock.available:0
-msgid "Search stock available"
+msgid "Customer Locations"
 msgstr ""
 
 #. module: wms
-#: field:product.product,location_type:0
-msgid "Location type"
-msgstr ""
-
-#. module: wms
-#: help:product.product,location_type:0
-msgid "Type of location for this product"
-msgstr ""
-
-#. module: wms
-#: help:stock.location.category,name:0
-msgid "Name of the category of stock location"
-msgstr ""
-
-#. module: wms
-#: field:stock.warehouse,force_reserve:0
-msgid "Force reserve"
-msgstr ""
-
-#. module: wms
-#: help:stock.warehouse,crossdock_location_id:0
-msgid "Crossdock location for this product"
-msgstr ""
-
-#. module: wms
-#: selection:product.product,location_type:0
-#: model:stock.location,name:wms.stock_location_crossdock
-msgid "Crossdock"
-msgstr ""
-
-#. module: wms
-#: help:stock.warehouse,force_reserve:0
-msgid "If checked, the products will be reserved, even if we need more than the available quantity"
-msgstr ""
-
-#. module: wms
-#: field:stock.location.category,active:0
-msgid "Active"
-msgstr ""
-
-#. module: wms
-#: help:stock.location.category,active:0
-msgid "This field allows to hide the category without removing it"
-msgstr ""
-
-#. module: wms
-#: field:stock.warehouse,crossdock_location_id:0
-msgid "Crossdock location"
-msgstr ""
-
-#. module: wms
-#: field:wms.report.stock.available,tracking_id:0
-msgid "Tracking"
-msgstr ""
-
-#. module: wms
-#: selection:product.product,location_type:0
-msgid "Compute"
-msgstr ""
-
-#. module: wms
-#: field:stock.location.category,name:0
-msgid "Name"
-msgstr ""
-
-#. module: wms
-#: model:ir.model,name:wms.model_product_product
-#: field:wms.report.stock.available,product_id:0
-msgid "Product"
+#: selection:wms.report.stock.available,usage:0
+msgid "Procurement"
 msgstr ""
 
 #. module: wms
@@ -161,8 +178,8 @@ msgid "Code of the category of stock location"
 msgstr ""
 
 #. module: wms
-#: selection:product.product,location_type:0
-msgid "Fixed"
+#: selection:wms.report.stock.available,usage:0
+msgid "Supplier Location"
 msgstr ""
 
 #. module: wms
@@ -171,22 +188,53 @@ msgid "Category of this location"
 msgstr ""
 
 #. module: wms
+#: view:wms.report.stock.available:0
+msgid "Production Lot"
+msgstr ""
+
+#. module: wms
 #: field:stock.location.category,code:0
 msgid "Code"
 msgstr ""
 
 #. module: wms
-#: field:wms.report.stock.available,qty:0
-msgid "Qty"
+#: selection:wms.report.stock.available,usage:0
+msgid "Transit Location for Inter-Companies Transfers"
 msgstr ""
 
 #. module: wms
-#: constraint:product.product:0
-msgid "Error: Invalid ean code"
+#: field:stock.location,warehouse_id:0
+#: view:wms.report.stock.available:0
+#: field:wms.report.stock.available,warehouse_id:0
+msgid "Warehouse"
+msgstr ""
+
+#. module: wms
+#: model:ir.actions.act_window,name:wms.act_open_report_stock_location_available_view
+#: model:ir.ui.menu,name:wms.menu_report_stock_location_available
+#: view:wms.report.stock.available:0
+msgid "Stock Available"
+msgstr ""
+
+#. module: wms
+#: selection:wms.report.stock.available,usage:0
+msgid "Production"
+msgstr ""
+
+#. module: wms
+#: selection:wms.report.stock.available,usage:0
+msgid "View"
 msgstr ""
 
 #. module: wms
 #: view:wms.report.stock.available:0
 msgid "Total"
+msgstr ""
+
+#. module: wms
+#: model:ir.model,name:wms.model_stock_location
+#: view:wms.report.stock.available:0
+#: field:wms.report.stock.available,location_id:0
+msgid "Location"
 msgstr ""
 

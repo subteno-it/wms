@@ -6,6 +6,7 @@
         #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
         #    Copyright (C) 2011 SYLEAM ([http://www.syleam.fr/])
         #              Christophe CHAUVET [christophe.chauvet@syleam.fr]
+        #              Sebastien LANGE [sebastien.lange@syleam.fr]
         #
         #    This file is a part of wms
         #
@@ -24,23 +25,20 @@
         #
         ##############################################################################
 
-        <!-- ************************************************************** -->
-        <!-- * WMS Report Stock Available ********************************* -->
-        <!-- ************************************************************** -->
         <record id="view_wms_report_stock_available_tree" model="ir.ui.view">
             <field name="name">wms.report.stock.available.tree</field>
             <field name="model">wms.report.stock.available</field>
             <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <tree string="Stock available">
+                <tree string="Stock Available">
+                    <field name="warehouse_id"/>
+                    <field name="location_id"/>
+                    <field name="usage" invisible="1"/>
                     <field name="product_id"/>
+                    <field name="product_qty" sum="Total"/>
                     <field name="uom_id"/>
                     <field name="prodlot_id"/>
-                    <field name="tracking_id"/>
-                    <field name="location_id"/>
-                    <field name="qty" sum="Total"/>
-                    <field name="warehouse_id"/>
                 </tree>
             </field>
         </record>
@@ -51,68 +49,77 @@
             <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <form string="Stock available">
-                    <field name="product_id" select="1"/>
-                    <field name="uom_id" select="2"/>
-                    <field name="prodlot_id" select="1"/>
-                    <field name="tracking_id" select="1"/>
-                    <field name="warehouse_id" select="1"/>
-                    <field name="location_id" select="1"/>
-                    <field name="qty" select="2"/>
+                <form string="Stock Available">
+                    <field name="product_id"/>
+                    <field name="uom_id"/>
+                    <field name="prodlot_id"/>
+                    <field name="warehouse_id"/>
+                    <field name="location_id"/>
+                    <field name="product_qty"/>
                 </form>
             </field>
         </record>
 
-
         <record id="view_wms_report_stock_available_search" model="ir.ui.view">
-            <field name="name">wms.report.stock.available.form</field>
+            <field name="name">wms.report.stock.available.search</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">form</field>
+            <field name="type">search</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <search string="Search stock available">
-                    <field name="product_id"/>
-                    <field name="uom_id" widget="selection"/>
-                    <separator string="Label" colspan="4"/>
-                    <field name="prodlot_id"/>
-                    <field name="tracking_id"/>
+                <search string="Stock Available">
+                    <filter icon="terp-go-home" name="in_location"
+                        string="Internal" domain="[('usage', '=', 'internal')]" help="Internal Locations" />
+                    <filter icon="terp-personal" name="customer"
+                        string="Customer" domain="[('usage', '=', 'customer')]" help="Customer Locations" />
+                    <filter icon="terp-personal" name="supplier"
+                        string="Supplier" domain="[('usage', '=', 'supplier')]" help="Supplier Locations" />
                     <separator orientation="vertical"/>
+                    <field name="product_id"/>
                     <field name="location_id"/>
-                    <field name="warehouse_id" widget="selection"/>
+                    <field name="prodlot_id"/>
+                    <newline/>
+                    <group expand="0" string="Extended Filters...">
+                        <field name="uom_id" widget="selection"/>
+                        <field name="warehouse_id" widget="selection"/>
+                        <field name="product_qty"/>
+                    </group>
+                    <newline/>
+                    <group expand="1" string="Group By..." colspan="4" col="20">
+                        <filter string="Warehouse" name="group_warehouse_id" icon="terp-go-home" domain="[]" context="{'group_by':'warehouse_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Location" name="group_location_id" icon="terp-folder-violet" domain="[]" context="{'group_by':'location_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Product" name="group_product_id" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="UOM" name="group_uom_id" icon="terp-mrp" domain="[]" context="{'group_by':'uom_id'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Production Lot" name="group_prodlot_id" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'prodlot_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>
 
-
-        <record model="ir.actions.act_window" id="act_open_wms_report_stock_available_view">
-            <field name="name">Stock available</field>
+        <record model="ir.actions.act_window" id="act_open_report_stock_location_available_view">
+            <field name="name">Stock Available</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wms.report.stock.available</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_wms_report_stock_available_search"/>
             <field name="domain">[]</field>
-            <field name="context">{}</field>
+            <field name="context">{'search_default_in_location':1}</field>
         </record>
 
-        <record model="ir.actions.act_window.view" id="act_open_wms_report_stock_available_view_form">
-            <field name="act_window_id" ref="act_open_wms_report_stock_available_view"/>
-            <field name="sequence" eval="20"/>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="view_wms_report_stock_available_form"/>
-        </record>
-
-        <record model="ir.actions.act_window.view" id="act_open_wms_report_stock_available_view_tree">
-            <field name="act_window_id" ref="act_open_wms_report_stock_available_view"/>
+        <record model="ir.actions.act_window.view" id="act_open_report_stock_location_available_view_tree">
+            <field name="act_window_id" ref="act_open_report_stock_location_available_view"/>
             <field name="sequence" eval="10"/>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_wms_report_stock_available_tree"/>
         </record>
 
-        <menuitem id="menu_wms_report_stock_available"
+        <menuitem id="menu_report_stock_location_available"
             parent="stock.next_id_61"
-            sequence="50"
-            action="act_open_wms_report_stock_available_view"/>
+            sequence="40"
+            action="act_open_report_stock_location_available_view"/>
 
     </data>
 </openerp>
