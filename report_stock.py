@@ -38,17 +38,6 @@ class wms_report_stock_available(osv.osv):
     _auto = False
     _rec_name = 'product_id'
 
-    USAGE_SELECTION = [
-        ('supplier', 'Supplier Location'),
-        ('view', 'View'),
-        ('internal', 'Internal Location'),
-        ('customer', 'Customer Location'),
-        ('inventory', 'Inventory'),
-        ('procurement', 'Procurement'),
-        ('production', 'Production'),
-        ('transit', 'Transit Location for Inter-Companies Transfers')
-    ]
-
     _columns = {
         'product_id': fields.many2one('product.product', 'Product', readonly=True),
         'uom_id': fields.many2one('product.uom', 'UOM', readonly=True),
@@ -56,7 +45,7 @@ class wms_report_stock_available(osv.osv):
         'location_id': fields.many2one('stock.location', 'Location', readonly=True),
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', readonly=True),
         'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True),
-        'usage': fields.related('location_id', 'usage', type='selection', selection=USAGE_SELECTION, string='Location Type', help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
+        'usage': fields.char('Usage', size=16, help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
                        \n* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products
                        \n* Internal Location: Physical locations inside your own warehouses,
                        \n* Customer Location: Virtual location representing the destination location for products sent to your customers
@@ -82,33 +71,34 @@ class wms_report_stock_available(osv.osv):
                             product_id,
                             (SELECT product_template.uom_id FROM product_product, product_template WHERE product_product.product_tmpl_id = product_template.id AND product_product.id = report.product_id) AS uom_id,
                             prodlot_id,
+                            usage,
                             sum(qty) AS product_qty
                     FROM (
                            SELECT   -max(sm.id) AS id,
                                     sm.location_id,
                                     sm.product_id,
                                     sm.prodlot_id,
+                                    sl.usage,
                                     -sum(sm.product_qty /uo.factor) AS qty
                            FROM stock_move as sm
                            LEFT JOIN stock_location sl ON (sl.id = sm.location_id)
                            LEFT JOIN product_uom uo ON (uo.id=sm.product_uom)
                            WHERE state = 'done' AND sm.location_id != sm.location_dest_id
-                           GROUP BY sm.location_id, sm.product_id, sm.product_uom, sm.prodlot_id
+                           GROUP BY sm.location_id, sm.product_id, sm.product_uom, sm.prodlot_id, sl.usage
                            UNION ALL
                            SELECT   max(sm.id) AS id,
                                     sm.location_dest_id AS location_id,
                                     sm.product_id,
                                     sm.prodlot_id,
+                                    sl.usage,
                                     sum(sm.product_qty /uo.factor) AS qty
                            FROM stock_move AS sm
-                           LEFT JOIN stock_location sl
-                           ON (sl.id = sm.location_dest_id)
-                           LEFT JOIN product_uom uo
-                           ON (uo.id=sm.product_uom)
+                           LEFT JOIN stock_location sl ON (sl.id = sm.location_dest_id)
+                           LEFT JOIN product_uom uo ON (uo.id=sm.product_uom)
                            WHERE sm.state = 'done' AND sm.location_id != sm.location_dest_id
-                           GROUP BY sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id
+                           GROUP BY sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id, sl.usage
                     ) AS report
-                    GROUP BY location_id, product_id, prodlot_id
+                    GROUP BY location_id, product_id, prodlot_id, usage
                     HAVING sum(qty) > 0)
         """)
 
