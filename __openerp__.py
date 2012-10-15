@@ -39,6 +39,7 @@
         'security/ir.model.access.csv',
         'stock_view.xml',
         'report_stock_view.xml',
+        'wizard/stock_to_date_view.xml',
     ],
     'demo_xml': [],
     'test': [
