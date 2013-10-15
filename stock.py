@@ -23,11 +23,11 @@
 #
 ##############################################################################
 
-from osv import osv
-from osv import fields
+from openerp.osv import osv
+from openerp.osv import fields
 
 
-class stock_location_category(osv.osv):
+class stock_location_category(osv.Model):
     _name = 'stock.location.category'
     _description = 'Category of stock location'
 
@@ -37,17 +37,13 @@ class stock_location_category(osv.osv):
         'active': fields.boolean('Active', help='This field allows to hide the category without removing it'),
     }
 
-stock_location_category()
 
-
-class stock_location(osv.osv):
+class stock_location(osv.Model):
     _inherit = 'stock.location'
 
     _columns = {
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help='Warehouse where is located this location'),
         'categ_id': fields.many2one('stock.location.category', 'Category', help='Category of this location'),
     }
-
-stock_location()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -22,16 +22,14 @@
 #
 ##############################################################################
 
-from osv import osv
-from osv import fields
+from openerp.osv import osv
+from openerp.osv import fields
 import decimal_precision as dp
 from datetime import date
-from dateutil.rrule import MO, FR
-from dateutil.relativedelta import relativedelta
 from tools.translate import _
 
 
-class stock_to_date(osv.osv_memory):
+class stock_to_date(osv.TransientModel):
     _name = 'stock.to.date'
     _description = 'Stock to date by product'
     _rec_name = 'product_id'
@@ -207,8 +205,8 @@ class stock_to_date(osv.osv_memory):
         product_id = 'default_product_id' in context and context['default_product_id'] or 'active_id' in context and context['active_id'] or False
         orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
         report_obj = self.pool.get('wms.report.stock.available')
-        #user_obj = self.pool.get('res.users')
-        #user = user_obj.browse(cr, uid, uid, context=context)
+        # user_obj = self.pool.get('res.users')
+        # user = user_obj.browse(cr, uid, uid, context=context)
         if product_id:
             product = product_obj.browse(cr, uid, product_id, context=context)
 
@@ -219,16 +217,14 @@ class stock_to_date(osv.osv_memory):
             values['orderpoint_ids'] = orderpoint_obj.read(cr, uid, orderpoint_ids, [], context=context)
             report_stock_ids = report_obj.search(cr, uid, [('usage', '=', 'internal'), ('product_id', '=', product_id)], context=context)
             values['report_stock_ids'] = report_obj.read(cr, uid, report_stock_ids, [], context=context)
-        #if user.context_stock2date_start:
+        # if user.context_stock2date_start:
         #    values['date_from'] = (date.today() + relativedelta(weekday=MO(user.context_stock2date_start))).strftime('%Y-%m-%d')
-        #if user.context_stock2date_end:
+        # if user.context_stock2date_end:
         #    values['date_to'] = 'default_date_to' in context and context['default_date_to'] or (date.today() + relativedelta(weekday=FR(user.context_stock2date_end))).strftime('%Y-%m-%d')
         return values
 
-stock_to_date()
 
-
-class stock_to_date_line(osv.osv_memory):
+class stock_to_date_line(osv.TransientModel):
     _name = 'stock.to.date.line'
     _description = 'Lines of stock to date'
     _order = 'date asc'
@@ -246,8 +242,5 @@ class stock_to_date_line(osv.osv_memory):
     _defaults = {
         'color': False,
     }
-
-stock_to_date_line()
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

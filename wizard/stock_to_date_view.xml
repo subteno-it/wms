@@ -27,7 +27,6 @@
         <record id="view_stock_to_date_form" model="ir.ui.view">
             <field name="name">stock.to.date.form</field>
             <field name="model">stock.to.date</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock To Date" col="8">
@@ -69,7 +68,6 @@
         <record id="view_stock_to_date_tree" model="ir.ui.view">
             <field name="name">stock.to.date.tree</field>
             <field name="model">stock.to.date</field>
-            <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="">
@@ -93,7 +91,6 @@
 
         <record model="ir.values" id="wizard_stock_to_date">
             <field name="name">Stock To Date</field>
-            <field name="object" eval="1"/>
             <field name="key">action</field>
             <field name="key2">client_action_relate</field>
             <field name="model">product.product</field>

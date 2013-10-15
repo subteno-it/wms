@@ -23,13 +23,13 @@
 #
 ##############################################################################
 
-from osv import osv
-from osv import fields
+from openerp.osv import osv
+from openerp.osv import fields
 from tools.sql import drop_view_if_exists
 import decimal_precision as dp
 
 
-class wms_report_stock_available(osv.osv):
+class wms_report_stock_available(osv.Model):
     """
     Display the stock available, per unit, production lot
     """
@@ -101,8 +101,5 @@ class wms_report_stock_available(osv.osv):
                     GROUP BY location_id, product_id, prodlot_id, usage
                     HAVING sum(qty) > 0)
         """)
-
-wms_report_stock_available()
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

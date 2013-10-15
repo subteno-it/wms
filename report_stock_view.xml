@@ -28,7 +28,6 @@
         <record id="view_wms_report_stock_available_tree" model="ir.ui.view">
             <field name="name">wms.report.stock.available.tree</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="Stock Available">
@@ -46,7 +45,6 @@
         <record id="view_wms_report_stock_available_form" model="ir.ui.view">
             <field name="name">wms.report.stock.available.form</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock Available">
@@ -63,7 +61,6 @@
         <record id="view_wms_report_stock_available_search" model="ir.ui.view">
             <field name="name">wms.report.stock.available.search</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">search</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <search string="Stock Available">
