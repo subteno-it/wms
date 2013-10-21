@@ -65,14 +65,14 @@ class wms_report_stock_available(osv.Model):
                                     UNION
                                     SELECT sl.id, sl.name, sl.location_id, sl.warehouse_id FROM stock_location sl, location
                                     WHERE  sl.location_id = location.id)
-                    SELECT  max(id) AS id,
-                            (SELECT warehouse_id FROM stock_location WHERE id=report.location_id) AS warehouse_id,
-                            location_id,
-                            product_id,
-                            (SELECT product_template.uom_id FROM product_product, product_template WHERE product_product.product_tmpl_id = product_template.id AND product_product.id = report.product_id) AS uom_id,
-                            prodlot_id,
-                            usage,
-                            sum(qty) AS product_qty
+                    SELECT  max(sub.id) AS id,
+                            sl.warehouse_id,
+                            sub.location_id,
+                            sub.product_id,
+                            pt.uom_id,
+                            sub.prodlot_id,
+                            sub.usage,
+                            sum(sub.qty) AS product_qty
                     FROM (
                            SELECT   -max(sm.id) AS id,
                                     sm.location_id,
@@ -97,9 +97,12 @@ class wms_report_stock_available(osv.Model):
                            LEFT JOIN product_uom uo ON (uo.id=sm.product_uom)
                            WHERE sm.state = 'done' AND sm.location_id != sm.location_dest_id
                            GROUP BY sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id, sl.usage
-                    ) AS report
-                    GROUP BY location_id, product_id, prodlot_id, usage
-                    HAVING sum(qty) > 0)
+                    ) AS sub
+                    LEFT JOIN stock_location sl ON sl.id = sub.location_id
+                    LEFT JOIN product_product pp ON pp.id = sub.product_id
+                    LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                    GROUP BY sub.location_id, sub.product_id, sub.prodlot_id, sub.usage, sl.warehouse_id, pt.uom_id
+                    HAVING sum(sub.qty) > 0)
         """)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
