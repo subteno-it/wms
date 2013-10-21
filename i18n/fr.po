@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenERP Server 6.1\n"
+"Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-07 09:45+0000\n"
-"PO-Revision-Date: 2012-10-07 09:45+0000\n"
+"POT-Creation-Date: 2013-10-21 14:45+0000\n"
+"PO-Revision-Date: 2013-10-21 14:45+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -67,14 +67,23 @@ msgid "Category of stock location"
 msgstr "Catégorie d'emplacement de stock"
 
 #. module: wms
+#: model:ir.actions.act_window,name:wms.act_open_report_stock_location_available_view
+#: model:ir.ui.menu,name:wms.menu_report_stock_location_available
+#: view:stock.to.date:0
+#: field:stock.to.date,report_stock_ids:0
+#: view:wms.report.stock.available:0
+msgid "Stock Available"
+msgstr "Stock Disponible"
+
+#. module: wms
 #: model:ir.model,name:wms.model_wms_report_stock_available
 msgid "Stock available"
 msgstr "Stock disponible"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Internal Location"
-msgstr "Emplacement interne"
+#: field:stock.to.date,uom_id:0
+msgid "Default UoM"
+msgstr "Unité par défaut"
 
 #. module: wms
 #: view:wms.report.stock.available:0
@@ -87,26 +96,76 @@ msgid "Internal"
 msgstr "Interne"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Inventory"
-msgstr "Inventaire"
+#: model:ir.model,name:wms.model_stock_location
+#: view:wms.report.stock.available:0
+#: field:wms.report.stock.available,location_id:0
+msgid "Location"
+msgstr "Emplacement"
 
 #. module: wms
-#: view:wms.report.stock.available:0
-msgid "Supplier"
-msgstr "Fournisseur"
+#: model:ir.actions.act_window,name:wms.action_stock_to_date_form_view
+#: model:ir.actions.act_window,name:wms.action_stock_to_date_view
+#: model:ir.actions.act_window,name:wms.product_open_stock_to_date
+#: view:product.product:0
+#: view:stock.to.date:0
+#: field:stock.to.date.line,stock_to_date_id:0
+msgid "Stock To Date"
+msgstr "Stock à date"
+
+#. module: wms
+#: field:stock.to.date,stock_to_date_line_ids:0
+msgid "Line of stock to date"
+msgstr "Lignes"
+
+#. module: wms
+#: view:stock.to.date:0
+#: field:stock.to.date.line,incoming_qty:0
+msgid "Incoming"
+msgstr "Entrants"
+
+#. module: wms
+#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
+#: model:ir.ui.menu,name:wms.menu_stock_location_category
+#: view:stock.location.category:0
+msgid "Stock location category"
+msgstr "Catégorie d'emplacement"
 
 #. module: wms
 #: view:wms.report.stock.available:0
 #: field:wms.report.stock.available,uom_id:0
 msgid "UOM"
-msgstr "UOM"
+msgstr "UdM"
+
+#. module: wms
+#: field:stock.location.category,name:0
+msgid "Name"
+msgstr "Nom"
+
+#. module: wms
+#: field:stock.to.date.line,qty_available:0
+msgid "Quantity On Hand"
+msgstr "Qté en Stock"
+
+#. module: wms
+#: view:stock.to.date:0
+#: field:stock.to.date.line,outgoing_qty:0
+msgid "Outgoing"
+msgstr "Sortants"
 
 #. module: wms
 #: view:wms.report.stock.available:0
-#: field:wms.report.stock.available,product_id:0
-msgid "Product"
-msgstr "Produit"
+msgid "Supplier Locations"
+msgstr "Emplacements fournisseur"
+
+#. module: wms
+#: field:stock.to.date.line,virtual_available:0
+msgid "Forecasted Qty"
+msgstr "Qté prévue"
+
+#. module: wms
+#: field:wms.report.stock.available,usage:0
+msgid "Usage"
+msgstr "Usage"
 
 #. module: wms
 #: help:stock.location.category,name:0
@@ -114,9 +173,9 @@ msgid "Name of the category of stock location"
 msgstr "Nom de la catégorie d'emplacement"
 
 #. module: wms
-#: constraint:stock.location:0
-msgid "Error msg is in raise"
-msgstr "Error msg is in raise"
+#: view:stock.to.date:0
+msgid "Stock Orderpoint"
+msgstr "Règles de stock"
 
 #. module: wms
 #: field:wms.report.stock.available,product_qty:0
@@ -124,9 +183,17 @@ msgid "Quantity"
 msgstr "Quantité"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Customer Location"
-msgstr "Emplacement client"
+#: help:stock.to.date.line,incoming_qty:0
+msgid "Quantity of products that are planned to arrive.\n"
+"In a context with a single Stock Location, this includes goods arriving to this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods arriving to the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods arriving to the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods arriving to any Stock Location with 'internal' type."
+msgstr "Quantity of products that are planned to arrive.\n"
+"In a context with a single Stock Location, this includes goods arriving to this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods arriving to the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods arriving to the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods arriving to any Stock Location with 'internal' type."
 
 #. module: wms
 #: view:wms.report.stock.available:0
@@ -134,9 +201,9 @@ msgid "Internal Locations"
 msgstr "Emplacements interne"
 
 #. module: wms
-#: field:stock.location.category,active:0
-msgid "Active"
-msgstr "Actif"
+#: field:stock.to.date.line,date:0
+msgid "Date"
+msgstr "Date"
 
 #. module: wms
 #: view:wms.report.stock.available:0
@@ -154,26 +221,44 @@ msgid "Customer"
 msgstr "Client"
 
 #. module: wms
-#: field:wms.report.stock.available,usage:0
-msgid "Location Type"
-msgstr "Types d'Emplacements"
+#: view:stock.to.date:0
+msgid "Compute"
+msgstr "Calculer"
 
 #. module: wms
-#: field:stock.location.category,name:0
-msgid "Name"
-msgstr "Nom"
+#: help:stock.to.date.line,qty_available:0
+msgid "Current quantity of products.\n"
+"In a context with a single Stock Location, this includes goods stored at this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods stored in any Stock Location with 'internal' type."
+msgstr "Current quantity of products.\n"
+"In a context with a single Stock Location, this includes goods stored at this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods stored in any Stock Location with 'internal' type."
 
 #. module: wms
+#: help:stock.to.date,date_to:0
+msgid "Date end to compute stock"
+msgstr "Date de fin du calcul du stock à date"
+
+#. module: wms
+#: model:ir.model,name:wms.model_stock_to_date
+msgid "Stock to date by product"
+msgstr "Stock à date par produit"
+
+#. module: wms
+#: view:stock.to.date:0
+msgid "Lines"
+msgstr "Lignes"
+
+#. module: wms
+#: field:stock.to.date,product_id:0
 #: view:wms.report.stock.available:0
-msgid "Supplier Locations"
-msgstr "Emplacements fournisseur"
-
-#. module: wms
-#: model:ir.actions.act_window,name:wms.act_open_stock_location_category_view
-#: model:ir.ui.menu,name:wms.menu_stock_location_category
-#: view:stock.location.category:0
-msgid "Stock location category"
-msgstr "Catégorie d'emplacement"
+#: field:wms.report.stock.available,product_id:0
+msgid "Product"
+msgstr "Produit"
 
 #. module: wms
 #: view:wms.report.stock.available:0
@@ -181,9 +266,32 @@ msgid "Customer Locations"
 msgstr "Emplacements client"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Procurement"
-msgstr "Approvisionnements"
+#: help:stock.to.date.line,outgoing_qty:0
+msgid "Quantity of products that are planned to leave.\n"
+"In a context with a single Stock Location, this includes goods leaving this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods leaving the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods leaving the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods leaving any Stock Location with 'internal' type."
+msgstr "Quantity of products that are planned to leave.\n"
+"In a context with a single Stock Location, this includes goods leaving this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods leaving the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods leaving the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods leaving any Stock Location with 'internal' type."
+
+#. module: wms
+#: field:stock.to.date,orderpoint_ids:0
+msgid "OrderPoint"
+msgstr "Règles de stock"
+
+#. module: wms
+#: field:stock.location.category,active:0
+msgid "Active"
+msgstr "Actif"
+
+#. module: wms
+#: field:stock.to.date,date_to:0
+msgid "Date End"
+msgstr "Date de fin"
 
 #. module: wms
 #: help:stock.location.category,code:0
@@ -191,9 +299,9 @@ msgid "Code of the category of stock location"
 msgstr "Code de la catégorie d'emplacement"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Supplier Location"
-msgstr "Emplaceemnt fournisseur"
+#: field:stock.to.date,date_from:0
+msgid "Date start"
+msgstr "Date de début"
 
 #. module: wms
 #: help:stock.location,categ_id:0
@@ -211,43 +319,53 @@ msgid "Code"
 msgstr "Code"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Transit Location for Inter-Companies Transfers"
-msgstr "Transit Location for Inter-Companies Transfers"
+#: view:wms.report.stock.available:0
+msgid "Supplier"
+msgstr "Fournisseur"
+
+#. module: wms
+#: field:stock.to.date.line,color:0
+msgid "Color"
+msgstr "Couleur"
 
 #. module: wms
 #: field:stock.location,warehouse_id:0
+#: field:stock.to.date,warehouse_id:0
 #: view:wms.report.stock.available:0
 #: field:wms.report.stock.available,warehouse_id:0
 msgid "Warehouse"
 msgstr "Entrepôt"
 
 #. module: wms
-#: model:ir.actions.act_window,name:wms.act_open_report_stock_location_available_view
-#: model:ir.ui.menu,name:wms.menu_report_stock_location_available
-#: view:wms.report.stock.available:0
-msgid "Stock Available"
-msgstr "Stock Disponible"
+#: help:stock.to.date.line,virtual_available:0
+msgid "Forecast quantity (computed as Quantity On Hand - Outgoing + Incoming)\n"
+"In a context with a single Stock Location, this includes goods stored in this location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods stored in any Stock Location with 'internal' type."
+msgstr "Forecast quantity (computed as Quantity On Hand - Outgoing + Incoming)\n"
+"In a context with a single Stock Location, this includes goods stored in this location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
+"In a context with a single Shop, this includes goods stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods stored in any Stock Location with 'internal' type."
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "Production"
-msgstr "Production"
+#: help:stock.to.date,date_from:0
+msgid "Date start to compute stock"
+msgstr "Date de début du calcul du stock à date"
 
 #. module: wms
-#: selection:wms.report.stock.available,usage:0
-msgid "View"
-msgstr "Vue"
+#: help:stock.to.date.line,color:0
+msgid "Just for show color in today"
+msgstr "Just for show color in today"
+
+#. module: wms
+#: model:ir.model,name:wms.model_stock_to_date_line
+msgid "Lines of stock to date"
+msgstr "Lignes"
 
 #. module: wms
 #: view:wms.report.stock.available:0
 msgid "Total"
 msgstr "Total"
-
-#. module: wms
-#: model:ir.model,name:wms.model_stock_location
-#: view:wms.report.stock.available:0
-#: field:wms.report.stock.available,location_id:0
-msgid "Location"
-msgstr "Emplacement"
 

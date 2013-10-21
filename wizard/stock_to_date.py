@@ -26,7 +26,6 @@ from openerp.osv import osv
 from openerp.osv import fields
 import decimal_precision as dp
 from datetime import date
-from tools.translate import _
 
 
 class stock_to_date(osv.TransientModel):
@@ -40,81 +39,39 @@ class stock_to_date(osv.TransientModel):
         """
         product_obj = self.pool.get('product.product')
         line_obj = self.pool.get('stock.to.date.line')
+        warehouse_obj = self.pool.get('stock.warehouse')
         self.write(cr, uid, ids, {'stock_to_date_line_ids': [(5,)]}, context=context)
 
         for wizard in self.browse(cr, uid, ids, context=context):
             warehouse_ids = []
             if not wizard.warehouse_id:
-                wids = self.pool.get('stock.warehouse').search(cr, uid, [], context=context)
-                user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-                for w in self.pool.get('stock.warehouse').browse(cr, uid, wids, context=context):
-                    if w.partner_address_id and w.partner_address_id.partner_id and user.company_id.partner_id == w.partner_address_id.partner_id:
-                        warehouse_ids.append(w.id)
+                warehouse_ids = warehouse_obj.search(cr, uid, [], context=context)
             else:
                 warehouse_ids.append(wizard.warehouse_id.id)
-            if not warehouse_ids:
-                raise osv.except_osv(_('Warning !'), _('Please contact your administrator to configure warehouse in your profile.'))
-            tuple_warehouse_ids = tuple(warehouse_ids)
-
-            cr.execute(
-                """
-                SELECT distinct(date_move), product_id, warehouse_id
-                FROM (
-                    SELECT r.date::date AS date_move, r.product_id, %s AS warehouse_id
-                    FROM stock_move r LEFT JOIN product_uom u ON (r.product_uom=u.id)
-                    WHERE state IN ('confirmed','assigned','waiting','done','reserved')
-                    AND product_id = %s
-                    AND location_id IN (
-                        WITH RECURSIVE location(id, parent_id) AS (
-                        SELECT id, location_id FROM stock_location WHERE id IN (SELECT lot_stock_id FROM stock_warehouse WHERE id IN %s)
-                        UNION
-                        SELECT sl.id, sl.location_id FROM stock_location sl, location
-                        WHERE  sl.location_id = location.id)
-                        SELECT id FROM location)
-                    AND location_dest_id NOT IN (
-                        WITH RECURSIVE location(id, parent_id) AS (
-                        SELECT id, location_id FROM stock_location WHERE id IN (SELECT lot_stock_id FROM stock_warehouse WHERE id IN %s)
-                        UNION
-                        SELECT sl.id, sl.location_id FROM stock_location sl, location
-                        WHERE  sl.location_id = location.id)
-                        SELECT id FROM location)
-                    AND r.date::date >= %s AND r.date::date <= %s
-                    GROUP BY r.date::date, product_id, warehouse_id
-                    UNION ALL
-                    SELECT r.date::date as date_move, r.product_id, %s AS warehouse_id
-                    FROM stock_move r LEFT JOIN product_uom u on (r.product_uom=u.id)
-                    WHERE state IN ('confirmed','assigned','waiting','done','reserved')
-                    AND product_id = %s
-                    AND location_dest_id IN (
-                        WITH RECURSIVE location(id, parent_id) AS (
-                        SELECT id, location_id FROM stock_location WHERE id IN (SELECT lot_stock_id FROM stock_warehouse WHERE id IN %s)
-                        UNION
-                        SELECT sl.id, sl.location_id FROM stock_location sl, location
-                        WHERE  sl.location_id = location.id)
-                        SELECT id FROM location)
-                    AND location_id NOT IN (
-                        WITH RECURSIVE location(id, parent_id) AS (
-                        SELECT id, location_id FROM stock_location WHERE id IN (SELECT lot_stock_id FROM stock_warehouse WHERE id IN %s)
-                        UNION
-                        SELECT sl.id, sl.location_id FROM stock_location sl, location
-                        WHERE  sl.location_id = location.id)
-                        SELECT id FROM location)
-                    AND r.date::date >= %s and r.date::date <= %s
-                    GROUP BY r.date::date, product_id, warehouse_id
-                ) subquery
-                ORDER BY date_move ASC
-                """,
+            domain = ""
+            for warehouse in warehouse_obj.browse(cr, uid, warehouse_ids, context=context):
+                if domain:
+                    domain += " OR"
+                domain += " (parent_right <= " + str(warehouse.lot_stock_id.parent_right) + " AND parent_left >= " + str(warehouse.lot_stock_id.parent_left) + ")"
+            cr.execute("""
+                       WITH  location(id, parent_id) AS (
+                            SELECT id, location_id FROM stock_location WHERE """ + domain + """)
+                       SELECT r.date::date AS date_move, r.product_id FROM stock_move r
+                         LEFT JOIN location src_loc ON (r.location_id = src_loc.id)
+                         LEFT JOIN location dst_loc ON (r.location_dest_id = dst_loc.id)
+                         WHERE
+                              product_id = %s AND
+                              state IN ('confirmed','assigned','waiting','done','reserved') AND
+                              r.date::date >= %s AND r.date::date <= %s AND
+                              (
+                                     (src_loc.id IS NOT NULL AND dst_loc.id IS NULL) OR
+                                     (src_loc.id IS NULL AND dst_loc.id IS NOT NULL)
+                              )
+                         GROUP BY r.date::date, product_id
+                         ORDER BY r.date::date ASC
+                       """,
                 (
-                    tuple_warehouse_ids,
                     wizard.product_id.id,
-                    tuple_warehouse_ids,
-                    tuple_warehouse_ids,
-                    wizard.date_from,
-                    wizard.date_to,
-                    tuple_warehouse_ids,
-                    wizard.product_id.id,
-                    tuple_warehouse_ids,
-                    tuple_warehouse_ids,
                     wizard.date_from,
                     wizard.date_to,
                 )
@@ -128,17 +85,21 @@ class stock_to_date(osv.TransientModel):
                     ok = True
                     break
             if not ok:
-                results.append((today, wizard.product_id.id, warehouse_ids))
-            for date_move, product_id, warehouse_ids in sorted(results):
-                ctx = context.copy()
-                if isinstance(warehouse_ids, (int, long)):
-                    ctx.update({
-                        'warehouse': warehouse_ids,
-                    })
-                elif warehouse_ids and len(warehouse_ids) == 1:
-                    ctx.update({
-                        'warehouse': warehouse_ids[0],
-                    })
+                results.append((today, wizard.product_id.id))
+            ctx_warehouse = context.copy()
+            if isinstance(warehouse_ids, (int, long)):
+                ctx_warehouse.update({
+                    'warehouse': warehouse_ids,
+                })
+            elif warehouse_ids and len(warehouse_ids) == 1:
+                ctx_warehouse.update({
+                    'warehouse': warehouse_ids[0],
+                })
+            ctx_warehouse.update({
+                'compute_child': True,
+            })
+            for date_move, product_id in sorted(results):
+                ctx = ctx_warehouse.copy()
                 ctx.update({
                     'to_date': date_move + ' 23:59:59',
                     'compute_child': True,
@@ -153,6 +114,7 @@ class stock_to_date(osv.TransientModel):
                     'stock_to_date_id': wizard.id,
                     'date': date_move,
                     'virtual_available': product.virtual_available,
+                    'qty_available' : date_move == today and product.qty_available or 0.0,
                     'incoming_qty': product2.incoming_qty,
                     'outgoing_qty': product2.outgoing_qty * -1,
                     'color': date_move == today and True or False,
@@ -232,9 +194,55 @@ class stock_to_date_line(osv.TransientModel):
     _columns = {
         'stock_to_date_id': fields.many2one('stock.to.date', 'Stock To Date'),
         'date': fields.date('Date'),
-        'virtual_available': fields.float('Virtual', digits_compute=dp.get_precision('Product UoM')),
-        'incoming_qty': fields.float('Incoming', digits_compute=dp.get_precision('Product UoM')),
-        'outgoing_qty': fields.float('Outgoing', digits_compute=dp.get_precision('Product UoM')),
+        'virtual_available': fields.float('Forecasted Qty', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                          help="Forecast quantity (computed as Quantity On Hand "
+                                          "- Outgoing + Incoming)\n"
+                                          "In a context with a single Stock Location, this includes "
+                                          "goods stored in this location, or any of its children.\n"
+                                          "In a context with a single Warehouse, this includes "
+                                          "goods stored in the Stock Location of this Warehouse, or any "
+                                          "of its children.\n"
+                                          "In a context with a single Shop, this includes goods "
+                                          "stored in the Stock Location of the Warehouse of this Shop, "
+                                          "or any of its children.\n"
+                                          "Otherwise, this includes goods stored in any Stock Location "
+                                          "with 'internal' type."),
+        'qty_available': fields.float('Quantity On Hand', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                      help="Current quantity of products.\n"
+                                      "In a context with a single Stock Location, this includes "
+                                      "goods stored at this Location, or any of its children.\n"
+                                      "In a context with a single Warehouse, this includes "
+                                      "goods stored in the Stock Location of this Warehouse, or any "
+                                      "of its children.\n"
+                                      "In a context with a single Shop, this includes goods "
+                                      "stored in the Stock Location of the Warehouse of this Shop, "
+                                      "or any of its children.\n"
+                                      "Otherwise, this includes goods stored in any Stock Location "
+                                      "with 'internal' type."),
+        'incoming_qty': fields.float('Incoming', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                     help="Quantity of products that are planned to arrive.\n"
+                                     "In a context with a single Stock Location, this includes "
+                                     "goods arriving to this Location, or any of its children.\n"
+                                     "In a context with a single Warehouse, this includes "
+                                     "goods arriving to the Stock Location of this Warehouse, or "
+                                     "any of its children.\n"
+                                     "In a context with a single Shop, this includes goods "
+                                     "arriving to the Stock Location of the Warehouse of this "
+                                     "Shop, or any of its children.\n"
+                                     "Otherwise, this includes goods arriving to any Stock "
+                                     "Location with 'internal' type."),
+        'outgoing_qty': fields.float('Outgoing', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                     help="Quantity of products that are planned to leave.\n"
+                                     "In a context with a single Stock Location, this includes "
+                                     "goods leaving this Location, or any of its children.\n"
+                                     "In a context with a single Warehouse, this includes "
+                                     "goods leaving the Stock Location of this Warehouse, or "
+                                     "any of its children.\n"
+                                     "In a context with a single Shop, this includes goods "
+                                     "leaving the Stock Location of the Warehouse of this "
+                                     "Shop, or any of its children.\n"
+                                     "Otherwise, this includes goods leaving any Stock "
+                                     "Location with 'internal' type."),
         'color': fields.boolean('Color', help='Just for show color in today'),
         'empty': fields.char(' ', size=1),
     }
