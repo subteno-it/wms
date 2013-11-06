@@ -369,3 +369,22 @@ msgstr "Lignes"
 msgid "Total"
 msgstr "Total"
 
+#. module: wms
+#: help:res.users,context_stock2date_start:0
+msgid "Week basis for the calculation of the stock to date in relation to current week"
+msgstr "Semaine de base pour le calcul des stocks à date par rapport à la semaine actuelle."
+
+#. module: wms
+#: field:res.users,context_stock2date_start:0
+msgid "Stock to date start"
+msgstr "Début Stock à date"
+
+#. module: wms
+#: help:res.users,context_stock2date_end:0
+msgid "Last week for the calculation of the stock to date in relation to current week"
+msgstr "Dernière semaine pour le calcul du Stock à date par rapport à la semaine en cours."
+
+#. module: wms
+#: field:res.users,context_stock2date_end:0
+msgid "Stock to date end"
+msgstr "Stock jusqu'à"

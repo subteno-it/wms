@@ -4,6 +4,8 @@
 #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
 #    Copyright (C) 2011 SYLEAM Info Services (<http://www.Syleam.fr/>)
 #              Sylvain Garancher <sylvain.garancher@syleam.fr>
+#    Copyright (C) 2013 SYLEAM Info Services (<http://www.Syleam.fr/>)
+#              Sebastien LANGE <sebastien.lange@syleam.fr>
 #
 #    This file is a part of wms
 #
@@ -37,6 +39,7 @@
     'images': [],
     'update_xml': [
         'security/ir.model.access.csv',
+        'base_view.xml',
         'stock_view.xml',
         'report_stock_view.xml',
         'wizard/stock_to_date_view.xml',
