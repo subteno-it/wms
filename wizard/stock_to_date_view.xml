@@ -44,7 +44,9 @@
                                 <field name="stock_to_date_line_ids" colspan="4" nolabel="1" height="500">
                                     <tree string="Lines" colors="blue:color">
                                         <field name="date"/>
+                                        <field name="input_qty"/>
                                         <field name="incoming_qty" sum="Incoming"/>
+                                        <field name="output_qty"/>
                                         <field name="outgoing_qty" sum="Outgoing"/>
                                         <field name="virtual_available"/>
                                         <field name="qty_available"/>

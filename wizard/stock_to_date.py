@@ -63,7 +63,7 @@ class stock_to_date(osv.TransientModel):
                          LEFT JOIN location dst_loc ON (r.location_dest_id = dst_loc.id)
                          WHERE
                               product_id = %s AND
-                              state IN ('confirmed','assigned','waiting','done','reserved') AND
+                              state IN ('confirmed','assigned','waiting','done') AND
                               r.date::date >= %s AND r.date::date <= %s AND
                               (
                                      (src_loc.id IS NOT NULL AND dst_loc.id IS NULL) OR
@@ -118,7 +118,9 @@ class stock_to_date(osv.TransientModel):
                     'virtual_available': product.virtual_available,
                     'qty_available' : date_move == today and product.qty_available or 0.0,
                     'incoming_qty': product2.incoming_qty,
+                    'input_qty': product_obj.get_product_available(cr, uid, [product_id], context=dict(ctx2, states=('done',), what=('in',)))[product_id],
                     'outgoing_qty': product2.outgoing_qty * -1,
+                    'output_qty': abs(product_obj.get_product_available(cr, uid, [product_id], context=dict(ctx2, states=('done',), what=('out',)))[product_id]),
                     'color': date_move == today and True or False,
                 }, context=context)
         return True
@@ -245,6 +247,8 @@ class stock_to_date_line(osv.TransientModel):
                                      "Shop, or any of its children.\n"
                                      "Otherwise, this includes goods leaving any Stock "
                                      "Location with 'internal' type."),
+        'input_qty': fields.float('Input', digits_compute=dp.get_precision('Product Unit of Measure'),),
+        'output_qty': fields.float('Output', digits_compute=dp.get_precision('Product Unit of Measure'),),
         'color': fields.boolean('Color', help='Just for show color in today'),
         'empty': fields.char(' ', size=1),
     }

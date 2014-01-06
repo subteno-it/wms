@@ -388,3 +388,15 @@ msgstr "Dernière semaine pour le calcul du Stock à date par rapport à la sema
 #: field:res.users,context_stock2date_end:0
 msgid "Stock to date end"
 msgstr "Stock jusqu'à"
+
+#. module: wms
+#: view:stock.to.date:0
+#: field:stock.to.date.line,output_qty:0
+msgid "Output"
+msgstr "Sorties"
+
+#. module: wms
+#: view:stock.to.date:0
+#: field:stock.to.date.line,input_qty:0
+msgid "Input"
+msgstr "Entrées"
