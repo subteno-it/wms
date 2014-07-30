@@ -53,19 +53,15 @@ class wms_report_stock_available(osv.Model):
                        \n* Procurement: Virtual location serving as temporary counterpart for procurement operations when the source (supplier or production) is not known yet. This location should be empty when the procurement scheduler has finished running.
                        \n* Production: Virtual counterpart location for production operations: this location consumes the raw material and produces finished products
                       """),
+        'company_id': fields.many2one('res.company', 'Company', readonly=True),
     }
 
     def init(self, cr):
         drop_view_if_exists(cr, 'wms_report_stock_available')
         cr.execute("""
                 CREATE OR REPLACE VIEW wms_report_stock_available AS (
-                    WITH RECURSIVE location(id, name, parent_id, warehouse_id) AS (
-                                    select sw.lot_stock_id, ''::varchar, 0, sw.id
-                                    FROM   stock_warehouse sw
-                                    UNION
-                                    SELECT sl.id, sl.name, sl.location_id, sl.warehouse_id FROM stock_location sl, location
-                                    WHERE  sl.location_id = location.id)
                     SELECT  max(sub.id) AS id,
+                            sl.company_id,
                             sl.warehouse_id,
                             sub.location_id,
                             sub.product_id,
@@ -101,7 +97,7 @@ class wms_report_stock_available(osv.Model):
                     LEFT JOIN stock_location sl ON sl.id = sub.location_id
                     LEFT JOIN product_product pp ON pp.id = sub.product_id
                     LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
-                    GROUP BY sub.location_id, sub.product_id, sub.prodlot_id, sub.usage, sl.warehouse_id, pt.uom_id
+                    GROUP BY sub.location_id, sub.product_id, sub.prodlot_id, sub.usage, sl.warehouse_id, pt.uom_id, sl.company_id
                     HAVING sum(sub.qty) > 0)
         """)
 

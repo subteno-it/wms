@@ -39,6 +39,7 @@
     'images': [],
     'update_xml': [
         'security/ir.model.access.csv',
+        'security/wms_security.xml',
         'base_view.xml',
         'stock_view.xml',
         'report_stock_view.xml',
