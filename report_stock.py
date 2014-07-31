@@ -27,6 +27,7 @@ from openerp.osv import osv
 from openerp.osv import fields
 from tools.sql import drop_view_if_exists
 import decimal_precision as dp
+from collections import defaultdict
 
 
 class wms_report_stock_available(osv.Model):
@@ -45,6 +46,7 @@ class wms_report_stock_available(osv.Model):
         'location_id': fields.many2one('stock.location', 'Location', readonly=True),
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', readonly=True),
         'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True),
+        'product_warehouse_qty': fields.float('Quantity on Warehouse', digits_compute=dp.get_precision('Product UoM'), readonly=True),
         'usage': fields.char('Usage', size=16, help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
                        \n* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products
                        \n* Internal Location: Physical locations inside your own warehouses,
@@ -68,7 +70,8 @@ class wms_report_stock_available(osv.Model):
                             pt.uom_id,
                             sub.prodlot_id,
                             sub.usage,
-                            sum(sub.qty) AS product_qty
+                            sum(sub.qty) AS product_qty,
+                            0.0 as product_warehouse_qty
                     FROM (
                            SELECT   -max(sm.id) AS id,
                                     sm.location_id,
@@ -100,5 +103,23 @@ class wms_report_stock_available(osv.Model):
                     GROUP BY sub.location_id, sub.product_id, sub.prodlot_id, sub.usage, sl.warehouse_id, pt.uom_id, sl.company_id
                     HAVING sum(sub.qty) > 0)
         """)
+
+    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False):
+
+        if context is None:
+            context = {}
+        res = super(wms_report_stock_available, self).read_group(cr, uid, domain, fields, groupby, offset=offset, limit=limit, context=context, orderby=orderby)
+        product_obj = self.pool.get('product.product')
+        warehouse_product = defaultdict(list)
+        for value in res:
+            if len(value['__domain']) == 3 and value['__domain'][0][0] == 'product_id' and value['__domain'][1][0] == 'warehouse_id' and value['__domain'][2][0] == 'usage':
+                warehouse_product[value['__domain'][1][2]].append(value['__domain'][0][2])
+        if warehouse_product:
+            for warehouse_id, product_ids in warehouse_product.items():
+                res_qty = product_obj._product_available(cr, uid, product_ids, field_names=['qty_available'], context=dict(context, warehouse=warehouse_id))
+                for value in res:
+                    if value['__domain'][1][2] == warehouse_id:
+                        value['product_warehouse_qty'] = res_qty[value['__domain'][0][2]]['qty_available']
+        return res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
