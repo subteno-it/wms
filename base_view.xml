@@ -30,7 +30,7 @@
             <field eval="80" name="priority"/>
             <field name="inherit_id" ref="base.view_users_form_simple_modif" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='tz']" position="after">
+                <xpath expr="//field[@name='context_tz']" position="after">
                     <field name="context_stock2date_start" context="{'user_preference':True}" readonly="0"/>
                     <field name="context_stock2date_end" context="{'user_preference':True}" readonly="0"/>
                 </xpath>
