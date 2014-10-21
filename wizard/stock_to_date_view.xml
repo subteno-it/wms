@@ -27,7 +27,6 @@
         <record id="view_stock_to_date_form" model="ir.ui.view">
             <field name="name">stock.to.date.form</field>
             <field name="model">stock.to.date</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock To Date" col="8">
@@ -45,9 +44,12 @@
                                 <field name="stock_to_date_line_ids" colspan="4" nolabel="1" height="500">
                                     <tree string="Lines" colors="blue:color">
                                         <field name="date"/>
+                                        <field name="input_qty"/>
                                         <field name="incoming_qty" sum="Incoming"/>
+                                        <field name="output_qty"/>
                                         <field name="outgoing_qty" sum="Outgoing"/>
-                                        <field name="virtual_available" string="Stock"/>
+                                        <field name="virtual_available"/>
+                                        <field name="qty_available"/>
                                         <field name="empty"/>
                                         <field name="color" invisible="1"/>
                                     </tree>
@@ -69,7 +71,6 @@
         <record id="view_stock_to_date_tree" model="ir.ui.view">
             <field name="name">stock.to.date.tree</field>
             <field name="model">stock.to.date</field>
-            <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="">
@@ -93,7 +94,6 @@
 
         <record model="ir.values" id="wizard_stock_to_date">
             <field name="name">Stock To Date</field>
-            <field name="object" eval="1"/>
             <field name="key">action</field>
             <field name="key2">client_action_relate</field>
             <field name="model">product.product</field>
@@ -105,6 +105,26 @@
             <field name="res_model">stock.to.date</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="product_open_stock_to_date">
+            <field name="context">{'default_product_id': active_id}</field>
+            <field name="name">Stock To Date</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.to.date</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record model="ir.ui.view" id="product_form_view_stock_to_date_button">
+            <field name="name">product.product.stock.to.date</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='buttons']" position="inside">
+                    <button string="Stock To Date" name="%(product_open_stock_to_date)d" type="action"/>
+                </xpath>
+            </field>
         </record>
 
     </data>

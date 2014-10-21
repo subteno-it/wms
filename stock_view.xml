@@ -27,7 +27,6 @@
         <record id="view_stock_location_category_tree" model="ir.ui.view">
             <field name="name">stock.location.category.tree</field>
             <field name="model">stock.location.category</field>
-            <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="Stock location category">
@@ -40,7 +39,6 @@
         <record id="view_stock_location_category_form" model="ir.ui.view">
             <field name="name">stock.location.category.form</field>
             <field name="model">stock.location.category</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock location category">
@@ -76,11 +74,10 @@
         <record id="view_stock_location_form" model="ir.ui.view">
             <field name="name">stock.location.form</field>
             <field name="model">stock.location</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="inherit_id" ref="stock.view_location_form"/>
             <field name="arch" type="xml">
-                <xpath expr="/form/group/field[@name='location_id']" position="after">
+                <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="warehouse_id"/>
                     <field name="categ_id"/>
                 </xpath>

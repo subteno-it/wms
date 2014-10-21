@@ -28,15 +28,16 @@
         <record id="view_wms_report_stock_available_tree" model="ir.ui.view">
             <field name="name">wms.report.stock.available.tree</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">tree</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <tree string="Stock Available">
+                    <field name="company_id" groups="base.group_multi_company"/>
                     <field name="warehouse_id"/>
                     <field name="location_id"/>
                     <field name="usage" invisible="1"/>
                     <field name="product_id"/>
                     <field name="product_qty" sum="Total"/>
+                    <field name="product_warehouse_qty"/>
                     <field name="uom_id"/>
                     <field name="prodlot_id"/>
                 </tree>
@@ -46,13 +47,13 @@
         <record id="view_wms_report_stock_available_form" model="ir.ui.view">
             <field name="name">wms.report.stock.available.form</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock Available">
                     <field name="product_id"/>
                     <field name="uom_id"/>
                     <field name="prodlot_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
                     <field name="warehouse_id"/>
                     <field name="location_id"/>
                     <field name="product_qty"/>
@@ -63,7 +64,6 @@
         <record id="view_wms_report_stock_available_search" model="ir.ui.view">
             <field name="name">wms.report.stock.available.search</field>
             <field name="model">wms.report.stock.available</field>
-            <field name="type">search</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <search string="Stock Available">
@@ -85,6 +85,8 @@
                     </group>
                     <newline/>
                     <group expand="1" string="Group By..." colspan="4" col="20">
+                        <filter string="Company" name="group_company_id" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                        <separator orientation="vertical"/>
                         <filter string="Warehouse" name="group_warehouse_id" icon="terp-go-home" domain="[]" context="{'group_by':'warehouse_id'}"/>
                         <separator orientation="vertical"/>
                         <filter string="Location" name="group_location_id" icon="terp-folder-violet" domain="[]" context="{'group_by':'location_id'}"/>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        ##############################################################################
+        #
+        #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
+        #    Copyright (C) 2013 SYLEAM Info Services ([Sebastien LANGE]) 
+        #              Sebastien LANGE [sebastien.lange@syleam.fr]
+        #
+        #    This file is a part of wms
+        #
+        #    wms is free software: you can redistribute it and/or modify
+        #    it under the terms of the GNU Affero General Public License as published by
+        #    the Free Software Foundation, either version 3 of the License, or
+        #    (at your option) any later version.
+        #
+        #    wms is distributed in the hope that it will be useful,
+        #    but WITHOUT ANY WARRANTY; without even the implied warranty of
+        #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        #    GNU Affero General Public License for more details.
+        #
+        #    You should have received a copy of the GNU Affero General Public License
+        #    along with this program.  If not, see [http://www.gnu.org/licenses/].
+        #
+        ##############################################################################
+
+        <record model="ir.ui.view" id="view_users_simple_form">
+            <field name="name">res.users.simplified.form</field>
+            <field name="model">res.users</field>
+            <field eval="80" name="priority"/>
+            <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tz']" position="after">
+                    <field name="context_stock2date_start" context="{'user_preference':True}" readonly="0"/>
+                    <field name="context_stock2date_end" context="{'user_preference':True}" readonly="0"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

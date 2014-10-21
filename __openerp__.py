@@ -4,6 +4,8 @@
 #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
 #    Copyright (C) 2011 SYLEAM Info Services (<http://www.Syleam.fr/>)
 #              Sylvain Garancher <sylvain.garancher@syleam.fr>
+#    Copyright (C) 2013 SYLEAM Info Services (<http://www.Syleam.fr/>)
+#              Sebastien LANGE <sebastien.lange@syleam.fr>
 #
 #    This file is a part of wms
 #
@@ -37,42 +39,14 @@
     'images': [],
     'update_xml': [
         'security/ir.model.access.csv',
+        'security/wms_security.xml',
+        'base_view.xml',
         'stock_view.xml',
         'report_stock_view.xml',
         'wizard/stock_to_date_view.xml',
     ],
     'demo_xml': [],
-    'test': [
-        #'test/wms_test01.yml',
-        #'test/wms_test02.yml',
-        #'test/wms_test03.yml',
-        #'test/wms_test04.yml',
-        #'test/wms_test05.yml',
-        #'test/wms_test06.yml',
-        #'test/wms_test07.yml',
-        #'test/wms_test08.yml',
-        #'test/wms_test09.yml',
-        #'test/wms_test10.yml',
-        #'test/wms_test11.yml',
-        #'test/wms_test12.yml',
-        #'test/wms_test13.yml',
-        #'test/wms_test14.yml',
-        #'test/wms_test15.yml',
-        #'test/wms_test16.yml',
-        #'test/wms_test17.yml',
-        #'test/wms_test18.yml',
-        #'test/wms_test19.yml',
-        #'test/wms_test20.yml',
-        #'test/wms_test21.yml',
-        #'test/wms_test22.yml',
-        #'test/wms_test23.yml',
-        #'test/wms_test24.yml',
-        #'test/wms_test25.yml',
-        #'test/wms_test26.yml',
-        #'test/wms_test27.yml',
-        #'test/wms_test28.yml',
-        #'test/wms_test29.yml',
-    ],
+    'test': [],
     'installable': True,
     'active': False,
     'license': 'AGPL-3',
