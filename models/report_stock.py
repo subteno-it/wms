@@ -38,11 +38,11 @@ class WmsReportStockAvailable(models.Model):
     _auto = False
     _rec_name = 'product_id'
 
-    product_id = fields.Many2one(relation='product.product', string='Product', readonly=True)
-    uom_id = fields.Many2one(relation='product.uom', string='UOM', readonly=True)
-    prodlot_id = fields.Many2one(relation='stock.production.lot', string='Production lot', readonly=True)
-    location_id = fields.Many2one(relation='stock.location', string='Location', readonly=True)
-    warehouse_id = fields.Many2one(relation='stock.warehouse', string='Warehouse', readonly=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Product', readonly=True)
+    uom_id = fields.Many2one(comodel_name='product.uom', string='UOM', readonly=True)
+    prodlot_id = fields.Many2one(comodel_name='stock.production.lot', string='Production lot', readonly=True)
+    location_id = fields.Many2one(comodel_name='stock.location', string='Location', readonly=True)
+    warehouse_id = fields.Many2one(comodel_name='stock.warehouse', string='Warehouse', readonly=True)
     product_qty = fields.Float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True)
     product_warehouse_qty = fields.Float('Quantity on Warehouse', digits_compute=dp.get_precision('Product UoM'), readonly=True)
     usage = fields.Char('Usage', size=16, help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
@@ -53,7 +53,7 @@ class WmsReportStockAvailable(models.Model):
                   \n* Procurement: Virtual location serving as temporary counterpart for procurement operations when the source (supplier or production) is not known yet. This location should be empty when the procurement scheduler has finished running.
                   \n* Production: Virtual counterpart location for production operations: this location consumes the raw material and produces finished products
                  """)
-    company_id = fields.Many2one(relation='res.company', string='Company', readonly=True)
+    company_id = fields.Many2one(comodel_name='res.company', string='Company', readonly=True)
 
     def init(self, cr):
         drop_view_if_exists(cr, 'wms_report_stock_available')
