@@ -23,14 +23,13 @@
 #
 ##############################################################################
 
-from openerp.osv import osv
-from openerp.osv import fields
-from tools.sql import drop_view_if_exists
-import decimal_precision as dp
+from openerp import models, api, fields
+from openerp.tools.sql import drop_view_if_exists
+from openerp.addons import decimal_precision as dp
 from collections import defaultdict
 
 
-class wms_report_stock_available(osv.Model):
+class WmsReportStockAvailable(models.Model):
     """
     Display the stock available, per unit, production lot
     """
@@ -39,24 +38,22 @@ class wms_report_stock_available(osv.Model):
     _auto = False
     _rec_name = 'product_id'
 
-    _columns = {
-        'product_id': fields.many2one('product.product', 'Product', readonly=True),
-        'uom_id': fields.many2one('product.uom', 'UOM', readonly=True),
-        'prodlot_id': fields.many2one('stock.production.lot', 'Production lot', readonly=True),
-        'location_id': fields.many2one('stock.location', 'Location', readonly=True),
-        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', readonly=True),
-        'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True),
-        'product_warehouse_qty': fields.float('Quantity on Warehouse', digits_compute=dp.get_precision('Product UoM'), readonly=True),
-        'usage': fields.char('Usage', size=16, help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
-                       \n* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products
-                       \n* Internal Location: Physical locations inside your own warehouses,
-                       \n* Customer Location: Virtual location representing the destination location for products sent to your customers
-                       \n* Inventory: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)
-                       \n* Procurement: Virtual location serving as temporary counterpart for procurement operations when the source (supplier or production) is not known yet. This location should be empty when the procurement scheduler has finished running.
-                       \n* Production: Virtual counterpart location for production operations: this location consumes the raw material and produces finished products
-                      """),
-        'company_id': fields.many2one('res.company', 'Company', readonly=True),
-    }
+    product_id = fields.Many2one(relation='product.product', string='Product', readonly=True)
+    uom_id = fields.Many2one(relation='product.uom', string='UOM', readonly=True)
+    prodlot_id = fields.Many2one(relation='stock.production.lot', string='Production lot', readonly=True)
+    location_id = fields.Many2one(relation='stock.location', string='Location', readonly=True)
+    warehouse_id = fields.Many2one(relation='stock.warehouse', string='Warehouse', readonly=True)
+    product_qty = fields.Float('Quantity', digits_compute=dp.get_precision('Product UoM'), readonly=True)
+    product_warehouse_qty = fields.Float('Quantity on Warehouse', digits_compute=dp.get_precision('Product UoM'), readonly=True)
+    usage = fields.Char('Usage', size=16, help="""* Supplier Location: Virtual location representing the source location for products coming from your suppliers
+                  \n* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products
+                  \n* Internal Location: Physical locations inside your own warehouses,
+                  \n* Customer Location: Virtual location representing the destination location for products sent to your customers
+                  \n* Inventory: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)
+                  \n* Procurement: Virtual location serving as temporary counterpart for procurement operations when the source (supplier or production) is not known yet. This location should be empty when the procurement scheduler has finished running.
+                  \n* Production: Virtual counterpart location for production operations: this location consumes the raw material and produces finished products
+                 """)
+    company_id = fields.Many2one(relation='res.company', string='Company', readonly=True)
 
     def init(self, cr):
         drop_view_if_exists(cr, 'wms_report_stock_available')
@@ -104,11 +101,11 @@ class wms_report_stock_available(osv.Model):
                     HAVING sum(sub.qty) > 0)
         """)
 
+    @api.v7
     def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False):
-
         if context is None:
             context = {}
-        res = super(wms_report_stock_available, self).read_group(cr, uid, domain, fields, groupby, offset=offset, limit=limit, context=context, orderby=orderby)
+        res = super(WmsReportStockAvailable, self).read_group(cr, uid, domain, fields, groupby, offset=offset, limit=limit, context=context, orderby=orderby)
         product_obj = self.pool.get('product.product')
         warehouse_product = defaultdict(list)
         for value in res:

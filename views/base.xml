@@ -28,7 +28,7 @@
             <field name="name">res.users.simplified.form</field>
             <field name="model">res.users</field>
             <field eval="80" name="priority"/>
-            <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+            <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='tz']" position="after">
                     <field name="context_stock2date_start" context="{'user_preference':True}" readonly="0"/>
@@ -36,6 +36,5 @@
                 </xpath>
             </field>
         </record>
-
     </data>
 </openerp>

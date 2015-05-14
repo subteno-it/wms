@@ -43,7 +43,6 @@
                 </tree>
             </field>
         </record>
-
         <record id="view_wms_report_stock_available_form" model="ir.ui.view">
             <field name="name">wms.report.stock.available.form</field>
             <field name="model">wms.report.stock.available</field>
@@ -60,19 +59,15 @@
                 </form>
             </field>
         </record>
-
         <record id="view_wms_report_stock_available_search" model="ir.ui.view">
             <field name="name">wms.report.stock.available.search</field>
             <field name="model">wms.report.stock.available</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <search string="Stock Available">
-                    <filter icon="terp-go-home" name="in_location"
-                        string="Internal" domain="[('usage', '=', 'internal')]" help="Internal Locations" />
-                    <filter icon="terp-personal" name="customer"
-                        string="Customer" domain="[('usage', '=', 'customer')]" help="Customer Locations" />
-                    <filter icon="terp-personal" name="supplier"
-                        string="Supplier" domain="[('usage', '=', 'supplier')]" help="Supplier Locations" />
+                    <filter icon="terp-go-home" name="in_location" string="Internal" domain="[('usage', '=', 'internal')]" help="Internal Locations"/>
+                    <filter icon="terp-personal" name="customer" string="Customer" domain="[('usage', '=', 'customer')]" help="Customer Locations"/>
+                    <filter icon="terp-personal" name="supplier" string="Supplier" domain="[('usage', '=', 'supplier')]" help="Supplier Locations"/>
                     <separator orientation="vertical"/>
                     <field name="product_id"/>
                     <field name="location_id"/>
@@ -99,7 +94,6 @@
                 </search>
             </field>
         </record>
-
         <record model="ir.actions.act_window" id="act_open_report_stock_location_available_view">
             <field name="name">Stock Available</field>
             <field name="type">ir.actions.act_window</field>
@@ -110,18 +104,13 @@
             <field name="domain">[]</field>
             <field name="context">{'search_default_in_location':1}</field>
         </record>
-
         <record model="ir.actions.act_window.view" id="act_open_report_stock_location_available_view_tree">
             <field name="act_window_id" ref="act_open_report_stock_location_available_view"/>
             <field name="sequence" eval="10"/>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_wms_report_stock_available_tree"/>
         </record>
-
-        <menuitem id="menu_report_stock_location_available"
-            parent="stock.next_id_61"
-            sequence="40"
-            action="act_open_report_stock_location_available_view"/>
+        <menuitem id="menu_report_stock_location_available" parent="stock.next_id_61" sequence="40" action="act_open_report_stock_location_available_view"/>
 
     </data>
 </openerp>

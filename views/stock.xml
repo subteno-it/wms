@@ -42,9 +42,11 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <form string="Stock location category">
-                    <field name="name" select="1"/>
-                    <field name="code" select="1"/>
-                    <field name="active" select="1"/>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="active"/>
+                    </group>
                 </form>
             </field>
         </record>
@@ -69,7 +71,7 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_stock_location_category_tree"/>
         </record>
-        <menuitem id="menu_stock_location_category" parent="stock.menu_warehouse_config" sequence="20" action="act_open_stock_location_category_view"/>
+        <menuitem id="menu_stock_location_category" parent="stock.menu_stock_configuration" sequence="20" action="act_open_stock_location_category_view"/>
 
         <record id="view_stock_location_form" model="ir.ui.view">
             <field name="name">stock.location.form</field>
@@ -83,6 +85,5 @@
                 </xpath>
             </field>
         </record>
-
     </data>
 </openerp>

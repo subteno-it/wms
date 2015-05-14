@@ -2,8 +2,8 @@
 ##############################################################################
 #
 #    wms module for OpenERP, This module allows to manage crossdocking in warehouses
-#    Copyright (C) 2013 SYLEAM Info Services (<Sebastien LANGE>)
-#              Sebastien LANGE <sebastien.lange@syleam.fr>
+#    Copyright (C) 2011 SYLEAM Info Services (<http://www.Syleam.fr/>)
+#              Sylvain Garancher <sylvain.garancher@syleam.fr>
 #
 #    This file is a part of wms
 #
@@ -22,23 +22,8 @@
 #
 ##############################################################################
 
-
-from openerp.osv import osv
-from openerp.osv import fields
-
-
-class res_users(osv.Model):
-    _inherit = 'res.users'
-
-    _columns = {
-        'context_stock2date_start': fields.integer('Stock to date start', help='Week basis for the calculation of the stock to date in relation to current week'),
-        'context_stock2date_end': fields.integer('Stock to date end', help='Last week for the calculation of the stock to date in relation to current week'),
-    }
-
-    _defaults = {
-        'context_stock2date_start': -1,
-        'context_stock2date_end': 4,
-    }
-
+import base
+import stock
+# import report_stock
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

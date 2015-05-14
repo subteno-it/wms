@@ -22,20 +22,20 @@
 #
 ##############################################################################
 
-from openerp.osv import osv
-from openerp.osv import fields
-import decimal_precision as dp
+from openerp import models, api, fields, exceptions
+from openerp.addons import decimal_precision as dp
 from datetime import date
 from dateutil.rrule import MO, FR
 from dateutil.relativedelta import relativedelta
 
 
-class stock_to_date(osv.TransientModel):
+class StockToDate(models.TransientModel):
     _name = 'stock.to.date'
     _description = 'Stock to date by product'
     _rec_name = 'product_id'
 
-    def compute_stock_to_date(self, cr, uid, ids, context=None):
+    @api.multi
+    def compute_stock_to_date(self):
         """
         Compute total quantity on lines
         """
@@ -125,7 +125,8 @@ class stock_to_date(osv.TransientModel):
                 }, context=context)
         return True
 
-    def _get_orderpoint(self, cr, uid, ids, field_name, args, context=None):
+    @api.one
+    def _get_orderpoint(self):
         """
         Get orderpoint for this product
         """
@@ -135,7 +136,8 @@ class stock_to_date(osv.TransientModel):
             result[wizard.id] = orderpoint_obj.search(cr, uid, [('product_id', '=', wizard.product_id.id)], context=context)
         return result
 
-    def _get_report_stock(self, cr, uid, ids, field_name, args, context=None):
+    @api.one
+    def _get_report_stock(self):
         """
         Get stock avalaible by location for this product
         """
@@ -156,16 +158,15 @@ class stock_to_date(osv.TransientModel):
         'report_stock_ids': fields.function(_get_report_stock, method=True, string='Stock Available', type='one2many', relation='wms.report.stock.available', store=False),
     }
 
-    def default_get(self, cr, uid, fields_list, context=None):
+    @api.model
+    def default_get(self, fields_list):
         """
         Automatically populate fields and lines when opening the wizard from the selected stock move
         """
-        if context is None:
-            context = {}
         product_obj = self.pool.get('product.product')
 
         # Call to super for standard behaviour
-        values = super(stock_to_date, self).default_get(cr, uid, fields_list, context=context)
+        values = super(StockToDate, self).default_get(cr, uid, fields_list, context=context)
 
         # Retrieve current stock move from context
         product_id = 'default_product_id' in context and context['default_product_id'] or 'active_id' in context and context['active_id'] or False
@@ -190,7 +191,7 @@ class stock_to_date(osv.TransientModel):
         return values
 
 
-class stock_to_date_line(osv.TransientModel):
+class stockToDateLine(models.TransientModel):
     _name = 'stock.to.date.line'
     _description = 'Lines of stock to date'
     _order = 'date asc'

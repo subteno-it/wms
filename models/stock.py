@@ -23,27 +23,22 @@
 #
 ##############################################################################
 
-from openerp.osv import osv
-from openerp.osv import fields
+from openerp import models, fields
 
 
-class stock_location_category(osv.Model):
+class StockLocationCategory(models.Model):
     _name = 'stock.location.category'
     _description = 'Category of stock location'
 
-    _columns = {
-        'name': fields.char('Name', size=64, required=True, help='Name of the category of stock location'),
-        'code': fields.char('Code', size=64, required=True, help='Code of the category of stock location'),
-        'active': fields.boolean('Active', help='This field allows to hide the category without removing it'),
-    }
+    name = fields.Char(size=64, required=True, help='Name of the category of stock location')
+    code = fields.Char(size=64, required=True, help='Code of the category of stock location')
+    active = fields.Boolean(help='This field allows to hide the category without removing it')
 
 
-class stock_location(osv.Model):
+class StockLocation(models.Model):
     _inherit = 'stock.location'
 
-    _columns = {
-        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help='Warehouse where is located this location'),
-        'categ_id': fields.many2one('stock.location.category', 'Category', help='Category of this location'),
-    }
+    warehouse_id = fields.Many2one(comodel_name='stock.warehouse', string='Warehouse', help='Warehouse where is located this location')
+    categ_id = fields.Many2one(comodel_name='stock.location.category', string='Category', help='Category of this location')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
