@@ -22,7 +22,7 @@
 #
 ##############################################################################
 
-from openerp import models, api, fields, exceptions
+from openerp import models, api, fields
 from openerp.addons import decimal_precision as dp
 from datetime import date
 from dateutil.rrule import MO, FR
@@ -39,48 +39,50 @@ class StockToDate(models.TransientModel):
         """
         Compute total quantity on lines
         """
-        product_obj = self.pool.get('product.product')
-        line_obj = self.pool.get('stock.to.date.line')
-        warehouse_obj = self.pool.get('stock.warehouse')
-        self.write(cr, uid, ids, {'stock_to_date_line_ids': [(5,)]}, context=context)
+        product_obj = self.env['product.product']
+        line_obj = self.env['stock.to.date.line']
+        warehouse_obj = self.env['stock.warehouse']
+        self.write({'stock_to_date_line_ids': [(5,)]})
 
-        for wizard in self.browse(cr, uid, ids, context=context):
-            warehouse_ids = []
+        for wizard in self:
+            warehouses = self.env['stock.warehouse']
             if not wizard.warehouse_id:
-                warehouse_ids = warehouse_obj.search(cr, uid, [], context=context)
+                warehouses = warehouse_obj.search([])
             else:
-                warehouse_ids.append(wizard.warehouse_id.id)
-            domain = ""
-            for warehouse in warehouse_obj.browse(cr, uid, warehouse_ids, context=context):
-                if domain:
-                    domain += " OR"
-                domain += " (parent_right <= " + str(warehouse.lot_stock_id.parent_right) + " AND parent_left >= " + str(warehouse.lot_stock_id.parent_left) + ")"
-            cr.execute("""
+                warehouses.add(wizard.warehouse_id)
+            where_parts = []
+            where_values = []
+            for warehouse in warehouses:
+                where_parts.append('(parent_right <= %s AND parent_left >= %s)')
+                where_values.append(warehouse.lot_stock_id.parent_right)
+                where_values.append(warehouse.lot_stock_id.parent_left)
+
+            self.env.cr.execute("""
                        WITH  location(id, parent_id) AS (
-                            SELECT id, location_id FROM stock_location WHERE """ + domain + """)
+                            SELECT id, location_id FROM stock_location WHERE %s)
                        SELECT r.date::date AS date_move, r.product_id FROM stock_move r
                          LEFT JOIN location src_loc ON (r.location_id = src_loc.id)
                          LEFT JOIN location dst_loc ON (r.location_dest_id = dst_loc.id)
                          WHERE
-                              product_id = %s AND
-                              state IN ('confirmed','assigned','waiting','done') AND
-                              r.date::date >= %s AND r.date::date <= %s AND
+                              product_id = %%s AND
+                              state IN ('confirmed','assigned','waiting') AND
+                              r.date::date >= %%s AND r.date::date <= %%s AND
                               (
                                      (src_loc.id IS NOT NULL AND dst_loc.id IS NULL) OR
                                      (src_loc.id IS NULL AND dst_loc.id IS NOT NULL)
                               )
                          GROUP BY r.date::date, product_id
                          ORDER BY r.date::date ASC
-                       """,
-                (
+                       """ % ' OR '.join(where_parts),
+                tuple(where_values) + (
                     wizard.product_id.id,
                     wizard.date_from,
                     wizard.date_to,
                 )
             )
 
-            results = cr.fetchall()
-            today = date.today().strftime('%Y-%m-%d')
+            results = self.env.cr.fetchall()
+            today = fields.Date.today()
             ok = False
             for result in results:
                 if today in result:
@@ -88,15 +90,10 @@ class StockToDate(models.TransientModel):
                     break
             if not ok:
                 results.append((today, wizard.product_id.id))
-            ctx_warehouse = context.copy()
-            if isinstance(warehouse_ids, (int, long)):
-                ctx_warehouse.update({
-                    'warehouse': warehouse_ids,
-                })
-            elif warehouse_ids and len(warehouse_ids) == 1:
-                ctx_warehouse.update({
-                    'warehouse': warehouse_ids[0],
-                })
+            ctx_warehouse = self.env.context.copy()
+            ctx_warehouse.update({
+                'warehouse': warehouses.id,
+            })
             ctx_warehouse.update({
                 'compute_child': True,
             })
@@ -110,84 +107,56 @@ class StockToDate(models.TransientModel):
                 ctx2.update({
                     'from_date': date_move + ' 00:00:00',
                 })
-                product = product_obj.browse(cr, uid, product_id, context=ctx)
-                product2 = product_obj.browse(cr, uid, product_id, context=ctx2)
-                line_obj.create(cr, uid, {
+                product = product_obj.with_context(ctx).browse(product_id)
+                product2 = product_obj.with_context(ctx2).browse(product_id)
+                line_obj.create({
                     'stock_to_date_id': wizard.id,
                     'date': date_move,
                     'virtual_available': product.virtual_available,
                     'qty_available' : date_move == today and product.qty_available or 0.0,
                     'incoming_qty': product2.incoming_qty,
-                    'input_qty': product_obj.get_product_available(cr, uid, [product_id], context=dict(ctx2, states=('done',), what=('in',)))[product_id],
                     'outgoing_qty': product2.outgoing_qty * -1,
-                    'output_qty': abs(product_obj.get_product_available(cr, uid, [product_id], context=dict(ctx2, states=('done',), what=('out',)))[product_id]),
                     'color': date_move == today and True or False,
-                }, context=context)
+                })
         return True
 
-    @api.one
-    def _get_orderpoint(self):
-        """
-        Get orderpoint for this product
-        """
-        orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
-        result = {}
-        for wizard in self.browse(cr, uid, ids, context=context):
-            result[wizard.id] = orderpoint_obj.search(cr, uid, [('product_id', '=', wizard.product_id.id)], context=context)
-        return result
-
-    @api.one
-    def _get_report_stock(self):
-        """
-        Get stock avalaible by location for this product
-        """
-        report_obj = self.pool.get('wms.report.stock.available')
-        result = {}
-        for wizard in self.browse(cr, uid, ids, context=context):
-            result[wizard.id] = report_obj.search(cr, uid, [('usage', '=', 'internal'), ('product_id', '=', wizard.product_id.id)], context=context)
-        return result
-
-    _columns = {
-        'product_id': fields.many2one('product.product', 'Product', required=True),
-        'uom_id': fields.related('product_id', 'uom_id', type='many2one', relation='product.uom', string='Default UoM'),
-        'date_from': fields.date('Date start', required=True, help='Date start to compute stock'),
-        'date_to': fields.date('Date End', required=True, help='Date end to compute stock'),
-        'stock_to_date_line_ids': fields.one2many('stock.to.date.line', 'stock_to_date_id', 'Line of stock to date', readonly=True),
-        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', required=False),
-        'orderpoint_ids': fields.function(_get_orderpoint, method=True, string='OrderPoint', type='one2many', relation='stock.warehouse.orderpoint', store=False),
-        'report_stock_ids': fields.function(_get_report_stock, method=True, string='Stock Available', type='one2many', relation='wms.report.stock.available', store=False),
-    }
+    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
+    uom_id = fields.Many2one(related='product_id.uom_id', comodel_name='product.uom', string='Default UoM')
+    date_from = fields.Date(string='Date start', required=True, help='Date start to compute stock')
+    date_to = fields.Date(string='Date End', required=True, help='Date end to compute stock')
+    stock_to_date_line_ids = fields.One2many(comodel_name='stock.to.date.line', inverse_name='stock_to_date_id', string='Line of stock to date', readonly=True)
+    warehouse_id = fields.Many2one(comodel_name='stock.warehouse', string='Warehouse', required=False)
+    orderpoint_ids = fields.Many2many(string='OrderPoint', comodel_name='stock.warehouse.orderpoint', domain="[('usage', '=', 'internal'), ('product_id', '=', product_id)]")
+    quant_ids = fields.Many2many(string='Stock Available', comodel_name='stock.quant', domain="[('location_id.usage', '=', 'internal'), ('product_id', '=', product_id')]")
 
     @api.model
     def default_get(self, fields_list):
         """
         Automatically populate fields and lines when opening the wizard from the selected stock move
         """
-        product_obj = self.pool.get('product.product')
-
         # Call to super for standard behaviour
-        values = super(StockToDate, self).default_get(cr, uid, fields_list, context=context)
+        values = super(StockToDate, self).default_get(fields_list)
 
         # Retrieve current stock move from context
-        product_id = 'default_product_id' in context and context['default_product_id'] or 'active_id' in context and context['active_id'] or False
-        orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
-        report_obj = self.pool.get('wms.report.stock.available')
-        user_obj = self.pool.get('res.users')
-        user = user_obj.browse(cr, uid, uid, context=context)
-        if product_id:
-            product = product_obj.browse(cr, uid, product_id, context=context)
+        product_id = 'default_product_id' in self.env.context and self.env.context['default_product_id'] or 'active_id' in self.env.context and self.env.context['active_id'] or False
+        orderpoint_obj = self.env['stock.warehouse.orderpoint']
+        quant_obj = self.env['stock.quant']
 
+        if product_id:
             # Initialize values
-            values['product_id'] = product.id
-            values['stock_to_date_line_ids'] = []
-            orderpoint_ids = orderpoint_obj.search(cr, uid, [('product_id', '=', product_id)], context=context)
-            values['orderpoint_ids'] = orderpoint_obj.read(cr, uid, orderpoint_ids, [], context=context)
-            report_stock_ids = report_obj.search(cr, uid, [('usage', '=', 'internal'), ('product_id', '=', product_id)], context=context)
-            values['report_stock_ids'] = report_obj.read(cr, uid, report_stock_ids, [], context=context)
-        if user.context_stock2date_start:
-            values['date_from'] = (date.today() + relativedelta(weekday=MO(user.context_stock2date_start))).strftime('%Y-%m-%d')
-        if user.context_stock2date_end:
-            values['date_to'] = 'default_date_to' in context and context['default_date_to'] or (date.today() + relativedelta(weekday=FR(user.context_stock2date_end))).strftime('%Y-%m-%d')
+            orderpoint_ids = orderpoint_obj.search([('product_id', '=', product_id)])
+            quant_ids = quant_obj.search([('location_id.usage', '=', 'internal'), ('product_id', '=', product_id)])
+            values.update(
+                product_id=product_id,
+                stock_to_date_line_ids=[],
+                orderpoint_ids=orderpoint_obj.read(orderpoint_ids, []),
+                quant_ids=quant_obj.read(quant_ids, []),
+            )
+        if self.env.user.context_stock2date_start:
+            values['date_from'] = (date.today() + relativedelta(weekday=MO(self.env.user.context_stock2date_start))).strftime('%Y-%m-%d')
+        if self.env.user.context_stock2date_end:
+            values['date_to'] = 'default_date_to' in self.env.context and self.env.context['default_date_to'] or (date.today() + relativedelta(weekday=FR(self.env.user.context_stock2date_end))).strftime('%Y-%m-%d')
+
         return values
 
 
@@ -196,66 +165,33 @@ class stockToDateLine(models.TransientModel):
     _description = 'Lines of stock to date'
     _order = 'date asc'
 
-    _columns = {
-        'stock_to_date_id': fields.many2one('stock.to.date', 'Stock To Date'),
-        'date': fields.date('Date'),
-        'virtual_available': fields.float('Forecasted Qty', digits_compute=dp.get_precision('Product Unit of Measure'),
-                                          help="Forecast quantity (computed as Quantity On Hand "
-                                          "- Outgoing + Incoming)\n"
-                                          "In a context with a single Stock Location, this includes "
-                                          "goods stored in this location, or any of its children.\n"
-                                          "In a context with a single Warehouse, this includes "
-                                          "goods stored in the Stock Location of this Warehouse, or any "
-                                          "of its children.\n"
-                                          "In a context with a single Shop, this includes goods "
-                                          "stored in the Stock Location of the Warehouse of this Shop, "
-                                          "or any of its children.\n"
-                                          "Otherwise, this includes goods stored in any Stock Location "
-                                          "with 'internal' type."),
-        'qty_available': fields.float('Quantity On Hand', digits_compute=dp.get_precision('Product Unit of Measure'),
-                                      help="Current quantity of products.\n"
-                                      "In a context with a single Stock Location, this includes "
-                                      "goods stored at this Location, or any of its children.\n"
-                                      "In a context with a single Warehouse, this includes "
-                                      "goods stored in the Stock Location of this Warehouse, or any "
-                                      "of its children.\n"
-                                      "In a context with a single Shop, this includes goods "
-                                      "stored in the Stock Location of the Warehouse of this Shop, "
-                                      "or any of its children.\n"
-                                      "Otherwise, this includes goods stored in any Stock Location "
-                                      "with 'internal' type."),
-        'incoming_qty': fields.float('Incoming', digits_compute=dp.get_precision('Product Unit of Measure'),
-                                     help="Quantity of products that are planned to arrive.\n"
-                                     "In a context with a single Stock Location, this includes "
-                                     "goods arriving to this Location, or any of its children.\n"
-                                     "In a context with a single Warehouse, this includes "
-                                     "goods arriving to the Stock Location of this Warehouse, or "
-                                     "any of its children.\n"
-                                     "In a context with a single Shop, this includes goods "
-                                     "arriving to the Stock Location of the Warehouse of this "
-                                     "Shop, or any of its children.\n"
-                                     "Otherwise, this includes goods arriving to any Stock "
-                                     "Location with 'internal' type."),
-        'outgoing_qty': fields.float('Outgoing', digits_compute=dp.get_precision('Product Unit of Measure'),
-                                     help="Quantity of products that are planned to leave.\n"
-                                     "In a context with a single Stock Location, this includes "
-                                     "goods leaving this Location, or any of its children.\n"
-                                     "In a context with a single Warehouse, this includes "
-                                     "goods leaving the Stock Location of this Warehouse, or "
-                                     "any of its children.\n"
-                                     "In a context with a single Shop, this includes goods "
-                                     "leaving the Stock Location of the Warehouse of this "
-                                     "Shop, or any of its children.\n"
-                                     "Otherwise, this includes goods leaving any Stock "
-                                     "Location with 'internal' type."),
-        'input_qty': fields.float('Input', digits_compute=dp.get_precision('Product Unit of Measure'),),
-        'output_qty': fields.float('Output', digits_compute=dp.get_precision('Product Unit of Measure'),),
-        'color': fields.boolean('Color', help='Just for show color in today'),
-        'empty': fields.char(' ', size=1),
-    }
-
-    _defaults = {
-        'color': False,
-    }
+    stock_to_date_id = fields.Many2one(comodel_name='stock.to.date', string='Stock To Date')
+    date = fields.Date(string='Date')
+    incoming_qty = fields.Float(string='Incoming', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                 help="Quantity of products that are planned to arrive.\n"
+                                 "In a context with a single Stock Location, this includes "
+                                 "goods arriving to this Location, or any of its children.\n"
+                                 "In a context with a single Warehouse, this includes "
+                                 "goods arriving to the Stock Location of this Warehouse, or "
+                                 "any of its children.\n"
+                                 "In a context with a single Shop, this includes goods "
+                                 "arriving to the Stock Location of the Warehouse of this "
+                                 "Shop, or any of its children.\n"
+                                 "Otherwise, this includes goods arriving to any Stock "
+                                 "Location with 'internal' type.")
+    outgoing_qty = fields.Float(string='Outgoing', digits_compute=dp.get_precision('Product Unit of Measure'),
+                                 help="Quantity of products that are planned to leave.\n"
+                                 "In a context with a single Stock Location, this includes "
+                                 "goods leaving this Location, or any of its children.\n"
+                                 "In a context with a single Warehouse, this includes "
+                                 "goods leaving the Stock Location of this Warehouse, or "
+                                 "any of its children.\n"
+                                 "In a context with a single Shop, this includes goods "
+                                 "leaving the Stock Location of the Warehouse of this "
+                                 "Shop, or any of its children.\n"
+                                 "Otherwise, this includes goods leaving any Stock "
+                                 "Location with 'internal' type.")
+    color = fields.Boolean(string='Color', default=False, help='Just for show color in today')
+    empty = fields.Char(string=' ', size=1)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

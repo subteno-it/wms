@@ -44,12 +44,8 @@
                                 <field name="stock_to_date_line_ids" colspan="4" nolabel="1" height="500">
                                     <tree string="Lines" colors="blue:color">
                                         <field name="date"/>
-                                        <field name="input_qty"/>
                                         <field name="incoming_qty" sum="Incoming"/>
-                                        <field name="output_qty"/>
                                         <field name="outgoing_qty" sum="Outgoing"/>
-                                        <field name="virtual_available"/>
-                                        <field name="qty_available"/>
                                         <field name="empty"/>
                                         <field name="color" invisible="1"/>
                                     </tree>
@@ -58,7 +54,7 @@
                                 </field>
                             </page>
                             <page string="Stock Available">
-                                <field name="report_stock_ids" nolabel="1" readonly="1"/>
+                                <field name="quant_ids" nolabel="1" readonly="1"/>
                             </page>
                             <page string="Stock Orderpoint">
                                 <field name="orderpoint_ids" nolabel="1" readonly="1"/>
@@ -78,7 +74,6 @@
                 </tree>
             </field>
         </record>
-
         <record model="ir.actions.act_window" id="action_stock_to_date_view">
             <field name="name">Stock To Date</field>
             <field name="type">ir.actions.act_window</field>
@@ -91,7 +86,6 @@
             <field name="target">current</field>
             <!--field name="groups_id" eval="[(6,0,[ref('group_link_product_2_stock_to_date')])]"/-->
         </record>
-
         <record model="ir.values" id="wizard_stock_to_date">
             <field name="name">Stock To Date</field>
             <field name="key">action</field>
@@ -106,7 +100,6 @@
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
         </record>
-
         <record model="ir.actions.act_window" id="product_open_stock_to_date">
             <field name="context">{'default_product_id': active_id}</field>
             <field name="name">Stock To Date</field>
@@ -115,7 +108,6 @@
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
         </record>
-
         <record model="ir.ui.view" id="product_form_view_stock_to_date_button">
             <field name="name">product.product.stock.to.date</field>
             <field name="model">product.product</field>
@@ -126,6 +118,5 @@
                 </xpath>
             </field>
         </record>
-
     </data>
 </openerp>
